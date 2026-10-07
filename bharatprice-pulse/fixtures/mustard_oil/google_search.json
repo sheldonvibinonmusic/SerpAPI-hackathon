@@ -1,0 +1,278 @@
+{
+  "search_metadata": {
+    "id": "661f2a0b1234abcd5678ef90",
+    "status": "Success",
+    "json_endpoint": "https://serpapi.com/searches/661f2a0b1234abcd5678ef90.json",
+    "created_at": "2026-10-07 18:34:12 UTC",
+    "processed_at": "2026-10-07 18:34:13 UTC",
+    "google_url": "https://www.google.com/search?q=Fortune+mustard+oil+1L+Jaipur&gl=in&hl=en&num=10",
+    "raw_html_file": "https://serpapi.com/searches/661f2a0b1234abcd5678ef90.html",
+    "total_time_taken": 1.23
+  },
+  "search_parameters": {
+    "engine": "google",
+    "q": "Fortune mustard oil 1L Jaipur",
+    "google_domain": "google.co.in",
+    "gl": "in",
+    "hl": "en",
+    "num": "10",
+    "device": "desktop"
+  },
+  "search_information": {
+    "organic_results_state": "Results for exact spelling",
+    "query_displayed": "Fortune mustard oil 1L Jaipur",
+    "total_results": 4820000,
+    "time_taken_displayed": 0.52
+  },
+  "knowledge_graph": {
+    "title": "Fortune Mustard Oil",
+    "type": "Brand / Edible Oil",
+    "entity_type": "product",
+    "description": "Fortune Mustard Oil (Kachi Ghani) is one of India's most trusted edible oil brands, manufactured by Adani Wilmar Limited. Cold-pressed from Grade A mustard seeds, it retains natural pungency and glucosinolates associated with traditional Indian cooking.",
+    "source": {
+      "name": "Adani Wilmar",
+      "link": "https://www.adaniwilmar.com/brands/fortune"
+    },
+    "manufacturer": "Adani Wilmar Limited",
+    "category": "Edible Oils",
+    "country_of_origin": "India",
+    "available_sizes": ["500ml", "1L", "2L", "5L", "15L"],
+    "certifications": ["FSSAI Licensed", "Agmark Grade I"]
+  },
+  "inline_shopping_results": [
+    {
+      "position": 1,
+      "block_position": "top",
+      "title": "Fortune Kachi Ghani Pure Mustard Oil – 1 Litre",
+      "price": "₹162",
+      "extracted_price": 162,
+      "old_price": "₹178",
+      "extracted_old_price": 178,
+      "on_sale": true,
+      "source": "BigBasket",
+      "link": "https://www.bigbasket.com/pd/40012345/fortune-kachi-ghani-pure-mustard-oil-1-l/",
+      "product_id": "bb_40012345",
+      "thumbnail": "https://images.bigbasket.com/media/catalogue/products/xl/40012345_1.jpg",
+      "delivery": "Free delivery above ₹399"
+    },
+    {
+      "position": 2,
+      "block_position": "top",
+      "title": "Fortune Mustard Oil 1L – Kachi Ghani",
+      "price": "₹168",
+      "extracted_price": 168,
+      "on_sale": false,
+      "source": "JioMart",
+      "link": "https://www.jiomart.com/p/groceries/fortune-mustard-oil-1-litre/590234876",
+      "product_id": "jm_590234876",
+      "thumbnail": "https://www.jiomart.com/images/product/original/590234876/fortune-mustard-oil-1-litre.jpg",
+      "delivery": "Delivered in 2 hours"
+    },
+    {
+      "position": 3,
+      "block_position": "top",
+      "title": "Fortune Kachi Ghani Mustard Oil 1 L Bottle",
+      "price": "₹155",
+      "extracted_price": 155,
+      "old_price": "₹165",
+      "extracted_old_price": 165,
+      "on_sale": true,
+      "source": "Amazon.in",
+      "link": "https://www.amazon.in/dp/B08KXYZ1234",
+      "product_id": "asin_B08KXYZ1234",
+      "thumbnail": "https://m.media-amazon.com/images/I/71xyzABCD12._SL1500_.jpg",
+      "delivery": "FREE delivery for Prime members"
+    }
+  ],
+  "local_results": {
+    "places": [
+      {
+        "position": 1,
+        "title": "Rajasthan Edible Oil Traders",
+        "place_id": "ChIJrTLr-p2hCDsRSg4O7aCsNUQ",
+        "data_id": "0x396c5f8bd0f87469:0x353430c65e50aec",
+        "gps_coordinates": {
+          "latitude": 26.9135,
+          "longitude": 75.7872
+        },
+        "rating": 4.2,
+        "reviews": 87,
+        "type": "Oil wholesaler",
+        "types": ["Oil wholesaler", "Wholesale grocery store", "Food products supplier"],
+        "address": "Plot 23, Sitapura Industrial Area, Jaipur, Rajasthan 302022",
+        "open_now": true,
+        "hours": "Mon–Sat 9am–7pm",
+        "phone": "+91 98291 45678",
+        "description": "Wholesale distributor of Fortune, Saffola and local brands. Minimum order 12 bottles.",
+        "thumbnail": "https://lh3.googleusercontent.com/p/AF1Qip01JAIPUR_OIL_MOCK=s800"
+      },
+      {
+        "position": 2,
+        "title": "Sharma Oil & Provisions – Wholesale",
+        "place_id": "ChIJabc123def456ghi789jkl012",
+        "data_id": "0x396c6a2f1b43c1d3:0x4d22e5a0f1bc9380",
+        "gps_coordinates": {
+          "latitude": 26.9063,
+          "longitude": 75.7812
+        },
+        "rating": 4.5,
+        "reviews": 134,
+        "type": "Grocery distributor",
+        "types": ["Grocery distributor", "Oil supplier", "FMCG wholesaler"],
+        "address": "Shop 7, Subhash Nagar Market, Jaipur, Rajasthan 302016",
+        "open_now": true,
+        "hours": "Mon–Sun 8am–8pm",
+        "phone": "+91 94140 23456",
+        "description": "Authorized distributor of Adani Wilmar products including Fortune oils. Bulk supply to hotels and retailers.",
+        "thumbnail": "https://lh3.googleusercontent.com/p/AF1Qip02JAIPUR_SHARMA_MOCK=s800"
+      },
+      {
+        "position": 3,
+        "title": "Jai Kirana & General Store",
+        "place_id": "ChIJmno456pqr789stu012vwx345",
+        "data_id": "0x396c5a4f9c2e1f07:0x7a8b9c0d1e2f3456",
+        "gps_coordinates": {
+          "latitude": 26.9238,
+          "longitude": 75.8015
+        },
+        "rating": 3.9,
+        "reviews": 41,
+        "type": "Grocery store",
+        "types": ["Grocery store", "Convenience store"],
+        "address": "Near Ganesh Temple, Vaishali Nagar, Jaipur, Rajasthan 302021",
+        "open_now": false,
+        "hours": "Mon–Sun 7am–10pm",
+        "phone": "+91 97846 34567",
+        "description": "Retail and semi-wholesale kirana. Stocks Fortune, Patanjali and regional mustard oils.",
+        "thumbnail": "https://lh3.googleusercontent.com/p/AF1Qip03JAIPUR_KIRANA_MOCK=s800"
+      }
+    ]
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "title": "Fortune Kachi Ghani Pure Mustard Oil 1 L - BigBasket",
+      "link": "https://www.bigbasket.com/pd/40012345/fortune-kachi-ghani-pure-mustard-oil-1-l/",
+      "displayed_link": "www.bigbasket.com › fortune-kachi-ghani-mustard-oil",
+      "snippet": "Buy Fortune Kachi Ghani Pure Mustard Oil 1 L online at ₹162. Cold-pressed from Grade A mustard seeds. FSSAI certified. Free delivery on orders above ₹399.",
+      "snippet_highlighted_words": ["Fortune Kachi Ghani Pure Mustard Oil 1 L", "₹162"],
+      "date": "2026-09-28",
+      "source": "BigBasket",
+      "domain": "bigbasket.com",
+      "sitelinks": {
+        "inline": [
+          {"title": "5L Pack", "link": "https://www.bigbasket.com/pd/40012346/"},
+          {"title": "2L Bottle", "link": "https://www.bigbasket.com/pd/40012347/"},
+          {"title": "Similar Oils", "link": "https://www.bigbasket.com/cl/mustard-oil/"}
+        ]
+      }
+    },
+    {
+      "position": 2,
+      "title": "Fortune Mustard Oil 1 Litre Price in Jaipur | JioMart",
+      "link": "https://www.jiomart.com/p/groceries/fortune-mustard-oil-1-litre/590234876",
+      "displayed_link": "www.jiomart.com › fortune-mustard-oil-jaipur",
+      "snippet": "Order Fortune Mustard Oil 1L at ₹168 from JioMart Jaipur. Express delivery available in Vaishali Nagar, Mansarovar, C-Scheme. Bulk orders available.",
+      "snippet_highlighted_words": ["Fortune Mustard Oil 1L", "₹168", "Jaipur"],
+      "date": "2026-10-01",
+      "source": "JioMart",
+      "domain": "jiomart.com"
+    },
+    {
+      "position": 3,
+      "title": "Fortune Mustard Oil - Buy Online | Amazon.in",
+      "link": "https://www.amazon.in/dp/B08KXYZ1234",
+      "displayed_link": "www.amazon.in › fortune-mustard-oil",
+      "snippet": "Fortune Kachi Ghani Pure Mustard Oil, 1 L. Visit the Fortune Store. 4.4 out of 5 stars · 12,847 ratings. ₹155. ₹165 (6% off). FREE Delivery by Amazon on orders ₹499+.",
+      "snippet_highlighted_words": ["Fortune Kachi Ghani Pure Mustard Oil, 1 L", "₹155"],
+      "date": "2026-10-03",
+      "source": "Amazon.in",
+      "domain": "amazon.in",
+      "rich_snippet": {
+        "top": {
+          "detected_extensions": {
+            "price": 155,
+            "currency": "INR",
+            "rating": 4.4,
+            "reviews": 12847
+          }
+        }
+      }
+    },
+    {
+      "position": 4,
+      "title": "Fortune Mustard Oil 1L – Flipkart",
+      "link": "https://www.flipkart.com/fortune-kachi-ghani-pure-mustard-oil/p/itmf3e9x2xyzmn45",
+      "displayed_link": "www.flipkart.com › fortune-mustard-oil",
+      "snippet": "Fortune Kachi Ghani Pure Mustard Oil 1 L (Bottle). 4.3★ · 8,421 ratings. ₹159. ₹170 (7% off). Flipkart Grocery – Delivery in Jaipur in 1-2 days.",
+      "snippet_highlighted_words": ["Fortune Kachi Ghani Pure Mustard Oil 1 L", "₹159"],
+      "date": "2026-10-02",
+      "source": "Flipkart",
+      "domain": "flipkart.com",
+      "rich_snippet": {
+        "top": {
+          "detected_extensions": {
+            "price": 159,
+            "currency": "INR",
+            "rating": 4.3,
+            "reviews": 8421
+          }
+        }
+      }
+    },
+    {
+      "position": 5,
+      "title": "Mustard Oil Price Jaipur – Buy Wholesale | IndiaMART",
+      "link": "https://www.indiamart.com/proddetail/fortune-mustard-oil-1-litre-23456789012.html",
+      "displayed_link": "www.indiamart.com › fortune-mustard-oil-jaipur",
+      "snippet": "Fortune Mustard Oil 1L at ₹145–₹152/bottle for wholesale. Minimum order: 1 carton (12 bottles). Rajasthan Edible Oil Traders, Jaipur – Verified Supplier.",
+      "snippet_highlighted_words": ["Fortune Mustard Oil 1L", "₹145–₹152/bottle", "Jaipur"],
+      "date": "2026-09-15",
+      "source": "IndiaMART",
+      "domain": "indiamart.com"
+    }
+  ],
+  "news_results": [
+    {
+      "position": 1,
+      "title": "Mustard oil prices climb 8% in October as rabi sowing outlook dims",
+      "link": "https://economictimes.indiatimes.com/news/economy/agriculture/mustard-oil-prices-climb-8-percent-october-2026/articleshow/114567890.cms",
+      "source": {
+        "name": "The Economic Times",
+        "icon": "https://serpapi.com/searches/source-icons/economic-times.png",
+        "authors": ["Priya Krishnamurthy"]
+      },
+      "snippet": "Kachi ghani mustard oil retailed at ₹162–₹175/litre in major metros this week, up from ₹149–₹158 in July, as monsoon delays affect new-season Rajasthan mustard crop prospects.",
+      "thumbnail": "https://img.etimg.com/thumb/msid-114567890,width-300.jpg",
+      "date": "2026-10-06",
+      "link_canonical": "https://economictimes.indiatimes.com/news/economy/agriculture/mustard-oil-prices-climb-8-percent-october-2026/articleshow/114567890.cms"
+    },
+    {
+      "position": 2,
+      "title": "Government reviews import duty on palm oil amid mustard price surge",
+      "link": "https://www.business-standard.com/markets/commodities/govt-reviews-palm-oil-import-duty-mustard-price-surge-126100600456.html",
+      "source": {
+        "name": "Business Standard",
+        "icon": "https://serpapi.com/searches/source-icons/business-standard.png",
+        "authors": ["Sanjay Mehta"]
+      },
+      "snippet": "The Ministry of Food & Consumer Affairs is reviewing a temporary duty reduction on palm oil imports to cool domestic edible oil prices, with mustard oil now 12% above year-ago levels.",
+      "thumbnail": "https://bsmedia.business-standard.com/_media/bs/img/article/2026-10/06/full/mustard.jpg",
+      "date": "2026-10-05",
+      "link_canonical": "https://www.business-standard.com/markets/commodities/govt-reviews-palm-oil-import-duty-mustard-price-surge-126100600456.html"
+    }
+  ],
+  "related_searches": [
+    {"query": "fortune mustard oil 5L price Jaipur", "link": "https://www.google.co.in/search?q=fortune+mustard+oil+5L+price+Jaipur"},
+    {"query": "mustard oil wholesale Jaipur", "link": "https://www.google.co.in/search?q=mustard+oil+wholesale+Jaipur"},
+    {"query": "patanjali mustard oil 1L price", "link": "https://www.google.co.in/search?q=patanjali+mustard+oil+1L+price"},
+    {"query": "kachi ghani mustard oil best brand India", "link": "https://www.google.co.in/search?q=kachi+ghani+mustard+oil+best+brand+India"}
+  ],
+  "pagination": {
+    "current": 1,
+    "next": "https://serpapi.com/search.json?engine=google&q=Fortune+mustard+oil+1L+Jaipur&gl=in&hl=en&start=10",
+    "other_pages": {
+      "2": "https://serpapi.com/search.json?engine=google&q=Fortune+mustard+oil+1L+Jaipur&gl=in&hl=en&start=10"
+    }
+  }
+}

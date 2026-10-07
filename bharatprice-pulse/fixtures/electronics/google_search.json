@@ -1,0 +1,141 @@
+{
+  "search_metadata": {
+    "id": "666e7f4g6789fghi0123j456",
+    "status": "Success",
+    "json_endpoint": "https://serpapi.com/searches/666e7f4g6789fghi0123j456.json",
+    "created_at": "2026-10-07 18:39:00 UTC",
+    "processed_at": "2026-10-07 18:39:01 UTC",
+    "google_url": "https://www.google.com/search?q=Samsung+Galaxy+M14+5G+Delhi&gl=in&hl=en",
+    "total_time_taken": 1.31
+  },
+  "search_parameters": {
+    "engine": "google",
+    "q": "Samsung Galaxy M14 5G Delhi",
+    "google_domain": "google.co.in",
+    "gl": "in",
+    "hl": "en"
+  },
+  "knowledge_graph": {
+    "title": "Samsung Galaxy M14 5G",
+    "type": "Smartphone",
+    "description": "The Samsung Galaxy M14 5G is a budget 5G smartphone featuring a 6.6-inch FHD+ display, Exynos 1330 processor, 50MP triple camera system, and a 6000 mAh battery. Available in 4GB/64GB and 6GB/128GB configurations.",
+    "source": {"name": "Samsung India", "link": "https://www.samsung.com/in/smartphones/galaxy-m/"},
+    "specs": {
+      "display": "6.6\" FHD+ LCD",
+      "processor": "Exynos 1330",
+      "camera": "50MP + 2MP + 2MP",
+      "battery": "6000 mAh",
+      "os": "Android 13, One UI 5.1",
+      "5g_bands": "SA/NSA"
+    }
+  },
+  "inline_shopping_results": [
+    {
+      "position": 1,
+      "block_position": "top",
+      "title": "Samsung Galaxy M14 5G (4GB/64GB) – Smoky Teal",
+      "price": "₹12,490",
+      "extracted_price": 12490,
+      "old_price": "₹13,999",
+      "extracted_old_price": 13999,
+      "on_sale": true,
+      "source": "Amazon.in",
+      "link": "https://www.amazon.in/dp/B0C35VLYMP",
+      "product_id": "asin_B0C35VLYMP",
+      "thumbnail": "https://m.media-amazon.com/images/I/81galaxy-m14-teal._SL1500_.jpg"
+    },
+    {
+      "position": 2,
+      "block_position": "top",
+      "title": "Samsung Galaxy M14 5G 6GB 128GB – Berry Blue",
+      "price": "₹13,999",
+      "extracted_price": 13999,
+      "on_sale": false,
+      "source": "Flipkart",
+      "link": "https://www.flipkart.com/samsung-galaxy-m14-5g/p/itm8b974f0bff312",
+      "product_id": "fk_itm8b974f0bff312",
+      "thumbnail": "https://rukminim2.flixcart.com/image/832/832/samsung-m14-blue.jpg"
+    }
+  ],
+  "local_results": {
+    "places": [
+      {
+        "position": 1,
+        "title": "Nehru Place Electronics Market",
+        "place_id": "ChIJDelhiNehruPlace01234567",
+        "rating": 4.1,
+        "reviews": 2341,
+        "type": "Electronics wholesale market",
+        "address": "Nehru Place, New Delhi, Delhi 110019",
+        "open_now": true,
+        "phone": "+91 11 2645 7890"
+      },
+      {
+        "position": 2,
+        "title": "Lajpat Rai Market – Mobile Dealers Association",
+        "place_id": "ChIJDelhiLajpatRai56789012",
+        "rating": 4.3,
+        "reviews": 876,
+        "type": "Mobile phone dealer",
+        "address": "Lajpat Rai Market, Chandni Chowk, Delhi 110006",
+        "open_now": true,
+        "phone": "+91 11 2396 4512"
+      }
+    ]
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "title": "Samsung Galaxy M14 5G – Price, Specs & Buy Online | Amazon India",
+      "link": "https://www.amazon.in/dp/B0C35VLYMP",
+      "snippet": "Samsung Galaxy M14 5G 4GB RAM, 64GB storage. ₹12,490. Prime delivery available in Delhi. 4.1★ from 45,678 ratings.",
+      "date": "2026-10-05"
+    },
+    {
+      "position": 2,
+      "title": "Samsung Galaxy M14 5G Full Specs & Price in India | Flipkart",
+      "link": "https://www.flipkart.com/samsung-galaxy-m14-5g/p/itm8b974f0bff312",
+      "snippet": "Buy Samsung Galaxy M14 5G 6GB+128GB at ₹13,999 on Flipkart. EMI from ₹583/month. 10-day return policy.",
+      "date": "2026-10-04"
+    },
+    {
+      "position": 3,
+      "title": "Samsung Galaxy M14 5G – Detailed Review | 91Mobiles",
+      "link": "https://www.91mobiles.com/samsung-galaxy-m14-5g-price-in-india",
+      "snippet": "Samsung Galaxy M14 5G starts at ₹12,490 in India (Oct 2026). 6000mAh battery, 50MP camera, 5G connectivity.",
+      "date": "2026-10-01"
+    },
+    {
+      "position": 4,
+      "title": "Buy Samsung Galaxy M14 5G in Delhi | Croma Store",
+      "link": "https://www.croma.com/samsung-galaxy-m14-5g-4gb/p/265834",
+      "snippet": "Available at Croma stores across Delhi NCR. ₹12,990. No-cost EMI options. 1-year Samsung India warranty.",
+      "date": "2026-09-28"
+    },
+    {
+      "position": 5,
+      "title": "Samsung Galaxy M14 5G Delhi Wholesale Price | Justdial",
+      "link": "https://www.justdial.com/Delhi/Samsung-Galaxy-M14-5G-Dealers/nct-11406117",
+      "snippet": "Compare Samsung Galaxy M14 5G prices from top dealers in Delhi. Nehru Place, Lajpat Rai, Gaffar Market listings.",
+      "date": "2026-09-20"
+    }
+  ],
+  "news_results": [
+    {
+      "position": 1,
+      "title": "Samsung Galaxy M14 5G gets further price cut ahead of festive season",
+      "link": "https://www.gadgets360.com/mobiles/news/samsung-galaxy-m14-5g-price-cut-october-2026-12345678",
+      "source": {"name": "Gadgets360", "authors": ["Anurag Dikshit"]},
+      "snippet": "Samsung has reduced the price of the Galaxy M14 5G base variant to ₹12,490, a ₹1,509 drop from its launch price, in an aggressive festive season move.",
+      "date": "2026-10-03"
+    },
+    {
+      "position": 2,
+      "title": "5G smartphone sales in India cross 4 crore units in H1 2026",
+      "link": "https://economictimes.indiatimes.com/tech/technology/5g-smartphone-sales-india-h1-2026/articleshow/114123456.cms",
+      "source": {"name": "Economic Times", "authors": ["Writankar Mukherjee"]},
+      "snippet": "Budget 5G phones under ₹15,000 led by Samsung, Realme and Poco now account for 58% of all 5G handset sales in India.",
+      "date": "2026-09-29"
+    }
+  ]
+}

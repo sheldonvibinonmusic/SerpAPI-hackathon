@@ -1,0 +1,159 @@
+{
+  "search_metadata": {
+    "id": "663b4c1d3456cdef7890g123",
+    "status": "Success",
+    "json_endpoint": "https://serpapi.com/searches/663b4c1d3456cdef7890g123.json",
+    "created_at": "2026-10-07 18:36:00 UTC",
+    "processed_at": "2026-10-07 18:36:01 UTC",
+    "google_url": "https://www.google.com/search?q=edible+oil+wholesale+Jaipur&tbm=lcl&gl=in&hl=en",
+    "total_time_taken": 0.98
+  },
+  "search_parameters": {
+    "engine": "google_local",
+    "q": "edible oil wholesale Jaipur",
+    "google_domain": "google.co.in",
+    "gl": "in",
+    "hl": "en",
+    "location": "Jaipur, Rajasthan, India"
+  },
+  "local_results": [
+    {
+      "position": 1,
+      "title": "Rajasthan Edible Oil Traders",
+      "place_id": "ChIJrTLr-p2hCDsRSg4O7aCsNUQ",
+      "data_id": "0x396c5f8bd0f87469:0x353430c65e50aec",
+      "gps_coordinates": {
+        "latitude": 26.9135,
+        "longitude": 75.7872
+      },
+      "rating": 4.2,
+      "reviews": 87,
+      "type": "Oil wholesaler",
+      "types": ["Oil wholesaler", "Wholesale grocery store", "Food products supplier"],
+      "address": "Plot 23, Sitapura Industrial Area, Jaipur, Rajasthan 302022",
+      "open_now": true,
+      "hours": "Mon–Sat 9am–7pm",
+      "phone": "+91 98291 45678",
+      "website": "https://rajasthanedibleoil.in",
+      "description": "One of Jaipur's largest wholesale distributors of edible oils including Fortune, Saffola, Dalda and local pressed oils. Serving 300+ retailers.",
+      "service_options": ["In-store shopping", "Delivery", "Bulk order"],
+      "thumbnail": "https://lh3.googleusercontent.com/p/AF1Qip01JAIPUR_OIL_MOCK=s800",
+      "price_level": "Inexpensive"
+    },
+    {
+      "position": 2,
+      "title": "Sharma Oil & Provisions – Wholesale",
+      "place_id": "ChIJabc123def456ghi789jkl012",
+      "data_id": "0x396c6a2f1b43c1d3:0x4d22e5a0f1bc9380",
+      "gps_coordinates": {
+        "latitude": 26.9063,
+        "longitude": 75.7812
+      },
+      "rating": 4.5,
+      "reviews": 134,
+      "type": "Grocery distributor",
+      "types": ["Grocery distributor", "Oil supplier", "FMCG wholesaler"],
+      "address": "Shop 7, Subhash Nagar Market, Jaipur, Rajasthan 302016",
+      "open_now": true,
+      "hours": "Mon–Sun 8am–8pm",
+      "phone": "+91 94140 23456",
+      "website": null,
+      "description": "Authorized distributor of Adani Wilmar products. Serves 500+ kirana outlets in Jaipur division. Minimum order 1 carton.",
+      "service_options": ["In-store shopping", "Delivery"],
+      "thumbnail": "https://lh3.googleusercontent.com/p/AF1Qip02JAIPUR_SHARMA_MOCK=s800",
+      "price_level": "Inexpensive"
+    },
+    {
+      "position": 3,
+      "title": "Gupta Brothers Oil Mill & Distributor",
+      "place_id": "ChIJdef789ghi012jkl345mno678",
+      "data_id": "0x396c7b3e2c54d2e4:0x5e33f6b1g2cd0491",
+      "gps_coordinates": {
+        "latitude": 26.8980,
+        "longitude": 75.7765
+      },
+      "rating": 4.0,
+      "reviews": 62,
+      "type": "Oil mill",
+      "types": ["Oil mill", "Wholesale market", "Kachi ghani oil producer"],
+      "address": "Bagru Road, Industrial Area, Jaipur, Rajasthan 302301",
+      "open_now": true,
+      "hours": "Mon–Sat 7am–6pm",
+      "phone": "+91 96723 12345",
+      "website": "https://guptabrothersmill.com",
+      "description": "Traditional kachi ghani mustard oil mill operating since 1978. Wholesale supply of freshly pressed mustard oil. Custom packaging available for bulk buyers.",
+      "service_options": ["In-store shopping", "Wholesale pickup", "Freight delivery"],
+      "thumbnail": "https://lh3.googleusercontent.com/p/AF1Qip04JAIPUR_GUPTAMILL_MOCK=s800",
+      "price_level": "Very inexpensive"
+    },
+    {
+      "position": 4,
+      "title": "Jai Kirana & General Store",
+      "place_id": "ChIJmno456pqr789stu012vwx345",
+      "data_id": "0x396c5a4f9c2e1f07:0x7a8b9c0d1e2f3456",
+      "gps_coordinates": {
+        "latitude": 26.9238,
+        "longitude": 75.8015
+      },
+      "rating": 3.9,
+      "reviews": 41,
+      "type": "Grocery store",
+      "types": ["Grocery store", "Convenience store"],
+      "address": "Near Ganesh Temple, Vaishali Nagar, Jaipur, Rajasthan 302021",
+      "open_now": false,
+      "hours": "Mon–Sun 7am–10pm",
+      "phone": "+91 97846 34567",
+      "website": null,
+      "description": "Retail and semi-wholesale kirana stocking Fortune, Patanjali, local mustard oils.",
+      "service_options": ["In-store shopping"],
+      "thumbnail": "https://lh3.googleusercontent.com/p/AF1Qip03JAIPUR_KIRANA_MOCK=s800",
+      "price_level": "Moderate"
+    },
+    {
+      "position": 5,
+      "title": "Pink City Agro Commodities",
+      "place_id": "ChIJpqr012stu345vwx678yza901",
+      "data_id": "0x396c8c5f0d35e3f5:0x8f44g7c2h3de1502",
+      "gps_coordinates": {
+        "latitude": 26.9012,
+        "longitude": 75.7934
+      },
+      "rating": 4.3,
+      "reviews": 98,
+      "type": "Agricultural commodity dealer",
+      "types": ["Agricultural commodity dealer", "Grain and oil trader", "APMC registered"],
+      "address": "Muhana Mandi, Jaipur, Rajasthan 302029",
+      "open_now": true,
+      "hours": "Mon–Sat 6am–3pm",
+      "phone": "+91 98281 56789",
+      "website": "https://pinkcityagro.in",
+      "description": "APMC-registered commodity trader dealing in mustard seed, groundnut, sesame and processed edible oils. Bulk pricing for volumes above 100L.",
+      "service_options": ["In-store pickup", "Freight", "Mandi delivery"],
+      "thumbnail": "https://lh3.googleusercontent.com/p/AF1Qip05JAIPUR_AGRO_MOCK=s800",
+      "price_level": "Very inexpensive"
+    },
+    {
+      "position": 6,
+      "title": "Comfort Zone Spa & Salon – Jaipur",
+      "place_id": "ChIJzyx987wvu654tsr321qpo098",
+      "data_id": "0x396c9d6e1e46f4g6:0x9g55h8d3i4ef2613",
+      "gps_coordinates": {
+        "latitude": 26.9310,
+        "longitude": 75.8100
+      },
+      "rating": 4.6,
+      "reviews": 312,
+      "type": "Beauty salon",
+      "types": ["Beauty salon", "Spa", "Massage"],
+      "address": "C-12 Tonk Road, Jaipur, Rajasthan 302018",
+      "open_now": true,
+      "hours": "Mon–Sun 10am–9pm",
+      "phone": "+91 98760 67890",
+      "website": "https://comfortzonejaipur.com",
+      "description": "Premium spa and salon offering oil massage, facial and hair treatment services. (Uses cosmetic oils, not edible.)",
+      "service_options": ["In-store only", "Appointment required"],
+      "thumbnail": "https://lh3.googleusercontent.com/p/AF1Qip06JAIPUR_SPA_MOCK=s800",
+      "price_level": "Moderate"
+    }
+  ]
+}

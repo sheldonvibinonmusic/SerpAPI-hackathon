@@ -1,0 +1,75 @@
+{
+  "search_metadata": {
+    "id": "664c5d2e4567def8901h234",
+    "status": "Success",
+    "json_endpoint": "https://serpapi.com/searches/664c5d2e4567def8901h234.json",
+    "created_at": "2026-10-07 18:37:00 UTC",
+    "processed_at": "2026-10-07 18:37:01 UTC",
+    "google_url": "https://www.google.com/search?q=mustard+oil+price+supply+India&tbm=nws&gl=in&hl=en",
+    "total_time_taken": 0.87
+  },
+  "search_parameters": {
+    "engine": "google_news",
+    "q": "mustard oil price supply India",
+    "google_domain": "google.co.in",
+    "gl": "in",
+    "hl": "en"
+  },
+  "news_results": [
+    {
+      "position": 1,
+      "title": "Mustard oil prices climb 8% in October as rabi sowing outlook dims",
+      "link": "https://economictimes.indiatimes.com/news/economy/agriculture/mustard-oil-prices-climb-8-percent-october-2026/articleshow/114567890.cms",
+      "source": "The Economic Times",
+      "date": "2026-10-06T09:15:00+05:30",
+      "snippet": "Kachi ghani mustard oil retailed at ₹162–₹175/litre in major metros this week, up from ₹149–₹158 in July, as monsoon delays dampen new-season Rajasthan mustard crop prospects.",
+      "thumbnail": "https://img.etimg.com/thumb/msid-114567890,width-300.jpg",
+      "authors": ["Priya Krishnamurthy"],
+      "story_token": "CAIiEKQ0VxFzJaB12TyUmustard"
+    },
+    {
+      "position": 2,
+      "title": "Government reviews import duty on palm oil amid mustard price surge",
+      "link": "https://www.business-standard.com/markets/commodities/govt-reviews-palm-oil-import-duty-mustard-price-surge-126100600456.html",
+      "source": "Business Standard",
+      "date": "2026-10-05T14:30:00+05:30",
+      "snippet": "The Ministry of Food & Consumer Affairs is considering a temporary duty reduction on crude palm oil imports to cool domestic edible oil prices, with mustard oil now 12% above year-ago levels.",
+      "thumbnail": "https://bsmedia.business-standard.com/_media/bs/img/article/2026-10/05/full/mustard-duty.jpg",
+      "authors": ["Sanjay Mehta"],
+      "story_token": "CAIiEPalmDutyReview2026India"
+    },
+    {
+      "position": 3,
+      "title": "Rajasthan mustard output forecast cut by 7 lakh tonnes on erratic rains",
+      "link": "https://www.financialexpress.com/market/commodities/rajasthan-mustard-output-forecast-cut-2026/3456789/",
+      "source": "Financial Express",
+      "date": "2026-10-02T11:00:00+05:30",
+      "snippet": "The Central Organisation for Oil Industry and Trade (COOIT) has revised its 2026–27 mustard production forecast downward to 121 lakh MT from an earlier estimate of 128 lakh MT, citing irregular late-monsoon rainfall in Rajasthan and Haryana.",
+      "thumbnail": "https://images.financialexpress.com/2026/10/mustard-crop.jpg",
+      "authors": ["Deepak Rawat"],
+      "story_token": "CAIiEMustardOutputForecast2026"
+    },
+    {
+      "position": 4,
+      "title": "Adani Wilmar raises MRP of Fortune edible oils by 4–6% from October",
+      "link": "https://www.livemint.com/companies/news/adani-wilmar-raises-mrp-fortune-oils-october-2026-11728200000000.html",
+      "source": "Mint",
+      "date": "2026-09-28T08:45:00+05:30",
+      "snippet": "Adani Wilmar has increased maximum retail prices for its Fortune brand edible oils by 4–6% effective October 1, citing elevated mustard seed procurement prices and higher packaging costs. The 1L mustard oil SKU now carries an MRP of ₹185.",
+      "thumbnail": "https://www.livemint.com/lm-img/img/2026/09/28/1600x900/adani-wilmar-fortune.jpg",
+      "authors": ["Ritu Sharma"],
+      "story_token": "CAIiEAdaniWilmarMRPOct2026"
+    },
+    {
+      "position": 5,
+      "title": "India's edible oil import bill surges 18% year-on-year in Q2 FY27",
+      "link": "https://www.thehindubusinessline.com/markets/commodities/india-edible-oil-import-bill-q2-fy27/article67890123.ece",
+      "source": "BusinessLine",
+      "date": "2026-09-22T16:20:00+05:30",
+      "snippet": "India's edible oil import expenditure rose to $3.8 billion in April–September 2026, up 18% year-on-year, driven by sharp global price increases in palm and sunflower oils following weather disruptions in Malaysia and Ukraine.",
+      "thumbnail": "https://bl-i.thgim.com/public/economy/edible-oil-import.jpg",
+      "authors": ["Kavita Subramaniam"],
+      "story_token": "CAIiEEdibleOilImportQ2FY27"
+    }
+  ]
+}
