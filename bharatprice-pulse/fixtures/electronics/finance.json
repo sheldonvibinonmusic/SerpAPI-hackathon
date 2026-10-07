@@ -1,0 +1,12 @@
+{
+  "summary": {
+    "title": "USD/INR",
+    "price": 86.42,
+    "currency": "INR",
+    "price_movement": {
+      "percentage": 0.35,
+      "value": 0.30,
+      "movement": "Up"
+    }
+  }
+}

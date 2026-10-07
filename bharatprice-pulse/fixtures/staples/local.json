@@ -1,0 +1,29 @@
+{
+  "local_results": [
+    {
+      "position": 1,
+      "title": "APMC Grain Market Vashi",
+      "place_id": "vashi_apmc_1",
+      "data_id": "data_vashi_1",
+      "address": "Dana Bandar, Sector 19, Vashi, Navi Mumbai, Maharashtra 400703",
+      "type": "Grain wholesale market",
+      "types": ["Wholesaler", "Grain merchant", "Produce market"],
+      "rating": 4.5,
+      "reviews": 4300,
+      "open_now": true,
+      "phone": "+91 22 2788 1234"
+    },
+    {
+      "position": 2,
+      "title": "Masjid Bunder Wholesale Grain Association",
+      "place_id": "masjid_bunder_1",
+      "data_id": "data_masjid_1",
+      "address": "Kazi Syed Street, Masjid Bunder, Mumbai, Maharashtra 400003",
+      "type": "Wholesale grocer",
+      "types": ["Wholesaler", "Distributor"],
+      "rating": 4.2,
+      "reviews": 1200,
+      "open_now": true
+    }
+  ]
+}

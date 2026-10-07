@@ -1,0 +1,20 @@
+{
+  "news_results": [
+    {
+      "position": 1,
+      "title": "Government reviews customs duty on smartphone display assemblies and camera modules",
+      "snippet": "Finance Ministry officials are assessing tariff structures to encourage domestic electronics manufacturing under PLI.",
+      "source": "The Economic Times",
+      "date": "2 days ago",
+      "link": "https://economictimes.indiatimes.com/tech/hardware/duty-review"
+    },
+    {
+      "position": 2,
+      "title": "5G smartphone shipments in India cross 70% share of total shipments in 2026",
+      "snippet": "Affordable 5G devices in the sub-15k segment drive replacement demand across Tier-2 and Tier-3 Indian cities.",
+      "source": "Business Standard",
+      "date": "4 days ago",
+      "link": "https://www.business-standard.com/technology/5g-shipments-2026"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "local_results": [
+    {
+      "position": 1,
+      "title": "Gaffar Market Mobile Wholesalers",
+      "place_id": "gaffar_1",
+      "data_id": "data_gaffar_1",
+      "address": "Gaffar Market, Karol Bagh, New Delhi, Delhi 110005",
+      "type": "Cell phone wholesale store",
+      "types": ["Cell phone store", "Wholesaler", "Electronics store"],
+      "rating": 4.3,
+      "reviews": 1250,
+      "open_now": true,
+      "phone": "+91 11 2575 8899"
+    },
+    {
+      "position": 2,
+      "title": "Nehru Place Electronics Distribution Hub",
+      "place_id": "nehru_1",
+      "data_id": "data_nehru_1",
+      "address": "Nehru Place, New Delhi, Delhi 110019",
+      "type": "Electronics distributor",
+      "types": ["Wholesale electronics", "Computer store", "Distributor"],
+      "rating": 4.4,
+      "reviews": 3400,
+      "open_now": true,
+      "phone": "+91 11 4160 5500"
+    },
+    {
+      "position": 3,
+      "title": "Lajpat Rai Market Wholesale Telecom",
+      "place_id": "lajpat_1",
+      "data_id": "data_lajpat_1",
+      "address": "Opposite Red Fort, Chandni Chowk, Delhi 110006",
+      "type": "Wholesale electronics store",
+      "types": ["Wholesaler", "Electronics store"],
+      "rating": 4.1,
+      "reviews": 890,
+      "open_now": true
+    }
+  ]
+}

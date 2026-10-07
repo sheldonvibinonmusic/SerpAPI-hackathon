@@ -18,6 +18,7 @@ from datetime import datetime, timedelta
 from typing import Dict
 
 from app.config.settings import get_settings
+from app.utils.datetime_utils import utc_now
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +32,7 @@ class AnalysisBudget:
     from_cache: int = 0
     engines_called: list = field(default_factory=list)
     budget_exceeded: bool = False
-    started_at: datetime = field(default_factory=datetime.utcnow)
+    started_at: datetime = field(default_factory=utc_now)
 
     @property
     def remaining(self) -> int:
@@ -106,7 +107,7 @@ class SearchBudgetController:
 
     def record_hourly_call(self) -> None:
         """Track calls in the last 60 minutes for hourly-rate awareness."""
-        now = datetime.utcnow()
+        now = utc_now()
         with self._lock:
             self._hourly_calls.append(now)
             # Clean up calls older than 60 minutes
@@ -115,7 +116,7 @@ class SearchBudgetController:
 
     def get_hourly_calls_count(self) -> int:
         """Number of searches made in the last 60 minutes (approximate, local tracking)."""
-        now = datetime.utcnow()
+        now = utc_now()
         cutoff = now - timedelta(hours=1)
         return sum(1 for t in self._hourly_calls if t > cutoff)
 

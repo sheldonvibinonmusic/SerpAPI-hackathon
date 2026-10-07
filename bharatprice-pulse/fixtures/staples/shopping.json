@@ -1,0 +1,54 @@
+{
+  "shopping_results": [
+    {
+      "position": 1,
+      "title": "India Gate Basmati Rice Feast Rozzana, 5kg",
+      "price": "₹425.00",
+      "extracted_price": 425.0,
+      "old_price": "₹495.00",
+      "source": "Blinkit",
+      "link": "https://blinkit.com/prn/india-gate-rozzana-5kg",
+      "rating": 4.4,
+      "reviews": 3200
+    },
+    {
+      "position": 2,
+      "title": "India Gate Basmati Rice Premium, 5 kg",
+      "price": "₹510.00",
+      "extracted_price": 510.0,
+      "source": "JioMart",
+      "link": "https://www.jiomart.com/p/groceries/india-gate-premium-5kg",
+      "rating": 4.3,
+      "reviews": 1800
+    },
+    {
+      "position": 3,
+      "title": "India Gate Basmati Rice Classic, 5kg Bag",
+      "price": "₹590.00",
+      "extracted_price": 590.0,
+      "source": "BigBasket",
+      "link": "https://www.bigbasket.com/pd/india-gate-classic-5kg",
+      "rating": 4.6,
+      "reviews": 5100
+    },
+    {
+      "position": 4,
+      "title": "India Gate Basmati Rice Super, 5 kg",
+      "price": "₹480.00",
+      "extracted_price": 480.0,
+      "source": "Amazon.in",
+      "link": "https://www.amazon.in/dp/B00L89T8F0",
+      "rating": 4.3,
+      "reviews": 2400
+    },
+    {
+      "position": 5,
+      "title": "India Gate Basmati Rice Mini Pack 1kg",
+      "price": "₹115.00",
+      "extracted_price": 115.0,
+      "source": "Blinkit",
+      "rating": 4.2,
+      "reviews": 500
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bharatprice-pulse
+    ports:
+      - "8000:8000"
+    environment:
+      - SERPAPI_KEY=${SERPAPI_KEY:-}
+      - SERPAPI_MOCK_MODE=${SERPAPI_MOCK_MODE:-true}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - LLM_ENABLED=${LLM_ENABLED:-false}
+      - DATABASE_PATH=/app/data/bharatprice_pulse.db
+    volumes:
+      # Persistent SQLite database and cache volume
+      - ./data:/app/data
+    restart: unless-stopped

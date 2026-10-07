@@ -1,0 +1,65 @@
+{
+  "shopping_results": [
+    {
+      "position": 1,
+      "title": "Samsung Galaxy M14 5G (Smoky Teal, 6GB, 128GB Storage)",
+      "link": "https://www.amazon.in/dp/B0BY8MCQ9S",
+      "product_id": "samsung_m14_1",
+      "price": "₹12,490.00",
+      "extracted_price": 12490.0,
+      "old_price": "₹17,990.00",
+      "source": "Amazon.in",
+      "rating": 4.1,
+      "reviews": 14200,
+      "delivery": "Free delivery"
+    },
+    {
+      "position": 2,
+      "title": "Samsung Galaxy M14 5G (Berry Blue, 6GB RAM, 128GB)",
+      "link": "https://www.flipkart.com/samsung-galaxy-m14-5g",
+      "product_id": "samsung_m14_2",
+      "price": "₹12,999.00",
+      "extracted_price": 12999.0,
+      "old_price": "₹18,490.00",
+      "source": "Flipkart",
+      "rating": 4.2,
+      "reviews": 9800,
+      "delivery": "Free delivery"
+    },
+    {
+      "position": 3,
+      "title": "Samsung Galaxy M14 5G 128 GB, 6 GB RAM, Smoky Teal Smartphone",
+      "link": "https://www.croma.com/samsung-galaxy-m14",
+      "product_id": "samsung_m14_3",
+      "price": "₹13,199.00",
+      "extracted_price": 13199.0,
+      "source": "Croma",
+      "rating": 4.3,
+      "reviews": 450,
+      "delivery": "Standard Delivery"
+    },
+    {
+      "position": 4,
+      "title": "Samsung Galaxy M14 5G Mobile Phone (6GB RAM, 128GB ROM)",
+      "link": "https://www.reliancedigital.in/samsung-m14",
+      "product_id": "samsung_m14_4",
+      "price": "₹12,890.00",
+      "extracted_price": 12890.0,
+      "source": "Reliance Digital",
+      "rating": 4.1,
+      "reviews": 1100,
+      "delivery": "Free delivery"
+    },
+    {
+      "position": 5,
+      "title": "Samsung Galaxy M14 5G Shockproof Protective Back Case Cover",
+      "link": "https://www.flipkart.com/case-m14",
+      "product_id": "case_1",
+      "price": "₹249.00",
+      "extracted_price": 249.0,
+      "source": "Flipkart",
+      "rating": 4.0,
+      "reviews": 230
+    }
+  ]
+}

@@ -233,5 +233,4 @@ class NormalizedQuery(BaseModel):
     # Cache key — deterministic hash of all result-changing parameters
     cache_key: Optional[str] = Field(default=None)
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = {"arbitrary_types_allowed": True}

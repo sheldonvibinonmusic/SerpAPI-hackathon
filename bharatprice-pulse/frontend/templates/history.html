@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analysis History — BharatPrice Pulse</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇮🇳</text></svg>">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <span class="flag-icon">🇮🇳</span>
+        <div>
+          <h1 class="brand-title">BharatPrice Pulse</h1>
+          <p class="brand-tagline">My Saved Market Checks</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <a href="/" class="btn btn-secondary">← Back to Price Check</a>
+        <button id="clear-history-btn" class="btn btn-outline-danger">Clear All History</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section class="history-hero">
+      <h2>Past Market Snapshots</h2>
+      <p>Review past analyses without consuming any SerpApi credits.</p>
+    </section>
+
+    <!-- History List Container -->
+    <div id="history-list" class="history-grid">
+      <div class="history-loading">Loading saved analyses...</div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>BharatPrice Pulse — Saved analyses are stored in local SQLite database.</p>
+    </div>
+  </footer>
+
+  <script>
+    async function loadHistory() {
+      const container = document.getElementById('history-list');
+      try {
+        const resp = await fetch('/api/history');
+        const data = await resp.json();
+        
+        if (!data.items || data.items.length === 0) {
+          container.innerHTML = `
+            <div class="card empty-state">
+              <h3>No market checks saved yet</h3>
+              <p>Go to the home screen and run your first market check!</p>
+              <a href="/" class="btn btn-primary" style="margin-top: 1rem;">Run First Analysis</a>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = data.items.map(item => `
+          <div class="card history-item-card">
+            <div class="history-header">
+              <span class="history-product">${item.product}</span>
+              <span class="badge badge-${item.action.toLowerCase()}">${item.action_label}</span>
+            </div>
+            <div class="history-meta">
+              <span>📍 ${item.city}</span>
+              <span>💰 Selling Price: ₹${item.selling_price.toFixed(2)}</span>
+              <span>📅 ${new Date(item.timestamp).toLocaleDateString()}</span>
+            </div>
+            <div class="history-footer">
+              <span class="badge-confidence">Confidence: ${item.confidence}</span>
+              <span class="history-credits">Used ${item.searches_consumed} credits</span>
+            </div>
+          </div>
+        `).join('');
+
+      } catch (e) {
+        container.innerHTML = `<div class="alert alert-danger">Failed to load history: ${e.message}</div>`;
+      }
+    }
+
+    document.getElementById('clear-history-btn').addEventListener('click', async () => {
+      if (confirm('Are you sure you want to delete all saved analyses?')) {
+        await fetch('/api/history', { method: 'DELETE' });
+        loadHistory();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', loadHistory);
+  </script>
+</body>
+</html>

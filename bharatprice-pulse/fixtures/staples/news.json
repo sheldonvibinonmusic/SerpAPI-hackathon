@@ -1,0 +1,20 @@
+{
+  "news_results": [
+    {
+      "position": 1,
+      "title": "Government lifts minimum export price floor on Basmati rice shipments ahead of festive season",
+      "snippet": "Move expected to support millers and farmers in Punjab, Haryana, and Western Uttar Pradesh following bumper harvest.",
+      "source": "Financial Express",
+      "date": "3 days ago",
+      "link": "https://www.financialexpress.com/economy/basmati-rice-mep-lifted"
+    },
+    {
+      "position": 2,
+      "title": "Kharif paddy procurement exceeds targets across major agricultural states",
+      "snippet": "FCI stocks comfortable as fresh crop arrivals accelerate in northern and western mandis.",
+      "source": "The Hindu BusinessLine",
+      "date": "1 week ago",
+      "link": "https://www.thehindubusinessline.com/economy/agri-business/paddy-procurement"
+    }
+  ]
+}

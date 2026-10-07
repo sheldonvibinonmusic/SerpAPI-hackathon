@@ -134,7 +134,7 @@ class LocalMerchant(BaseModel):
 
     # Availability
     is_open: Optional[bool] = Field(default=None)
-    hours: Optional[Dict[str, Any]] = Field(default=None)
+    hours: Optional[Any] = Field(default=None)
 
     # Quality signals — displayed to user as context, NOT used as inventory proxy
     rating: Optional[float] = Field(default=None)

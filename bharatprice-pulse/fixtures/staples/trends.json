@@ -1,0 +1,15 @@
+{
+  "interest_over_time": {
+    "timeline_data": [
+      { "date": "Aug 2026", "values": [{ "extracted_value": 70 }] },
+      { "date": "Sep 2026", "values": [{ "extracted_value": 78 }] },
+      { "date": "Oct 2026", "values": [{ "extracted_value": 85 }] }
+    ]
+  },
+  "interest_by_region": [
+    { "location": "Maharashtra", "extracted_value": 100 },
+    { "location": "Delhi", "extracted_value": 92 },
+    { "location": "Punjab", "extracted_value": 85 },
+    { "location": "Gujarat", "extracted_value": 80 }
+  ]
+}

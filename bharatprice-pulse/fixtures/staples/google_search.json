@@ -1,0 +1,34 @@
+{
+  "search_information": { "query_displayed": "India Gate Basmati Rice 5kg Mumbai" },
+  "shopping_results": [
+    {
+      "position": 1,
+      "title": "India Gate Basmati Rice Feast Rozzana, 5kg",
+      "price": "₹425.00",
+      "extracted_price": 425.0,
+      "source": "Blinkit",
+      "link": "https://blinkit.com/prn/india-gate-rozzana-5kg"
+    },
+    {
+      "position": 2,
+      "title": "India Gate Basmati Rice Classic, 5 kg Bag",
+      "price": "₹590.00",
+      "extracted_price": 590.0,
+      "source": "BigBasket",
+      "link": "https://www.bigbasket.com/pd/india-gate-classic-5kg"
+    }
+  ],
+  "local_results": {
+    "places": [
+      {
+        "title": "APMC Grain Market Vashi",
+        "place_id": "apmc_vashi",
+        "address": "Sector 19, Vashi, Navi Mumbai, Maharashtra 400703",
+        "type": "Grain wholesale market",
+        "rating": 4.5,
+        "reviews": 4200,
+        "open_now": true
+      }
+    ]
+  }
+}

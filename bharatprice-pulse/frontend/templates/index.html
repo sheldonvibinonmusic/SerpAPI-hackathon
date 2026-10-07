@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BharatPrice Pulse — Market Decision Copilot for Indian Retailers</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇮🇳</text></svg>">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <span class="flag-icon">🇮🇳</span>
+        <div>
+          <h1 class="brand-title" data-i18n="app.name">BharatPrice Pulse</h1>
+          <p class="brand-tagline" data-i18n="app.tagline">Smart Pricing for Indian Retailers</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Live SerpApi Quota Telemetry Widget -->
+        <div id="quota-badge" class="quota-badge" title="Live SerpApi Search Allowance">
+          <span class="quota-icon">⚡</span>
+          <span id="quota-text" data-i18n="quota.unknown">Checking...</span>
+        </div>
+
+        <!-- Language Selector -->
+        <div class="lang-selector">
+          <label for="lang-select" class="visually-hidden">Choose Language</label>
+          <select id="lang-select" class="lang-select">
+            <option value="en">English</option>
+            <option value="hi">हिंदी (Hindi)</option>
+            <option value="mr">मराठी (Marathi)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+            <option value="te">తెలుగు (Telugu)</option>
+            <option value="kn">ಕನ್ನಡ (Kannada)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+            <option value="as">অসমীয়া (Assamese)</option>
+          </select>
+        </div>
+
+        <a href="/history" class="nav-link" data-i18n="app.nav_history">My History</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+    
+    <!-- Hero / Headline -->
+    <section class="hero-section">
+      <h2 class="hero-title">
+        <span data-i18n="hero.title">Know Your Market,</span>
+        <span class="hero-accent" data-i18n="hero.title_accent">Price with Confidence</span>
+      </h2>
+      <p class="hero-subtitle" data-i18n="hero.subtitle">
+        Compare your price with online markets and nearby sellers in seconds. Designed for Indian shopkeepers.
+      </p>
+    </section>
+
+    <!-- Main Seller Form Card -->
+    <section class="card form-card">
+      <h3 class="card-title" data-i18n="form.title">Check Your Price Now</h3>
+
+      <form id="analysis-form" class="seller-form" novalidate>
+        
+        <div class="form-grid">
+          <!-- Product Input -->
+          <div class="form-group span-2">
+            <label for="product_raw" class="form-label" data-i18n="form.product_label">What are you selling?</label>
+            <input 
+              type="text" 
+              id="product_raw" 
+              name="product_raw" 
+              class="form-control" 
+              data-i18n-placeholder="form.product_placeholder" 
+              placeholder="e.g. Fortune Mustard Oil 1L, Samsung Galaxy M14 5G, Basmati Rice 5kg" 
+              required
+            >
+            <small class="form-hint" data-i18n="form.product_hint">Be specific — include brand, size or model if you know it</small>
+          </div>
+
+          <!-- City / Location Input -->
+          <div class="form-group">
+            <label for="city_raw" class="form-label" data-i18n="form.city_label">Where do you sell?</label>
+            <input 
+              type="text" 
+              id="city_raw" 
+              name="city_raw" 
+              class="form-control" 
+              data-i18n-placeholder="form.city_placeholder" 
+              placeholder="e.g. Jaipur, Pune, Delhi, Kolkata" 
+              required
+            >
+            <small class="form-hint" data-i18n="form.city_hint">Your city helps us find local market prices</small>
+          </div>
+
+          <!-- Selling Price Input -->
+          <div class="form-group">
+            <label for="selling_price" class="form-label" data-i18n="form.sell_price_label">Your selling price (₹)</label>
+            <input 
+              type="number" 
+              id="selling_price" 
+              name="selling_price" 
+              step="0.01" 
+              min="0.01" 
+              class="form-control" 
+              placeholder="175.00" 
+              required
+            >
+            <small class="form-hint" data-i18n="form.sell_price_hint">The price you currently charge your customers</small>
+          </div>
+
+          <!-- Cost Price Input (Optional) -->
+          <div class="form-group">
+            <label for="landed_cost" class="form-label" data-i18n="form.cost_price_label">Your purchase price (₹)</label>
+            <input 
+              type="number" 
+              id="landed_cost" 
+              name="landed_cost" 
+              step="0.01" 
+              min="0.01" 
+              class="form-control" 
+              placeholder="142.00 (optional)"
+            >
+            <small class="form-hint" data-i18n="form.cost_price_hint">What you paid for it — we'll calculate your margin</small>
+          </div>
+
+          <!-- Analysis Mode Selection -->
+          <div class="form-group span-2">
+            <label class="form-label" data-i18n="form.mode_label">How deep should we check?</label>
+            <div class="mode-selector">
+              <label class="mode-option">
+                <input type="radio" name="analysis_mode" value="quick">
+                <div class="mode-box">
+                  <span class="mode-title" data-i18n="form.mode_quick_name">Quick Check</span>
+                  <span class="mode-desc" data-i18n="form.mode_quick_desc">Checks online prices only. Fast results in under 10 seconds.</span>
+                </div>
+              </label>
+
+              <label class="mode-option">
+                <input type="radio" name="analysis_mode" value="standard" checked>
+                <div class="mode-box">
+                  <span class="mode-title" data-i18n="form.mode_standard_name">Standard Check</span>
+                  <span class="mode-desc" data-i18n="form.mode_standard_desc">Online prices + local sourcing + demand trends. Best for most decisions.</span>
+                </div>
+              </label>
+
+              <label class="mode-option">
+                <input type="radio" name="analysis_mode" value="deep">
+                <div class="mode-box">
+                  <span class="mode-title" data-i18n="form.mode_deep_name">Deep Check</span>
+                  <span class="mode-desc" data-i18n="form.mode_deep_desc">Everything in Standard + latest news + finance signals + photo scan.</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" id="submit-btn" class="btn btn-primary btn-large">
+            <span class="btn-text" data-i18n="form.submit_btn">Check My Market</span>
+            <span class="btn-spinner hidden"></span>
+          </button>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- Progress Status Box (Hidden by default) -->
+    <section id="progress-section" class="card progress-card hidden">
+      <h3 class="progress-title" data-i18n="progress.title">Checking the market for you…</h3>
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar-fill"></div>
+      </div>
+      <p id="progress-message" class="progress-msg">Starting search...</p>
+    </section>
+
+    <!-- Error Banner (Hidden by default) -->
+    <div id="error-banner" class="alert alert-danger hidden" role="alert">
+      <span class="alert-icon">⚠️</span>
+      <span id="error-text">An error occurred.</span>
+    </div>
+
+    <!-- Results Section (Hidden until analysis returns) -->
+    <div id="results-container" class="results-container hidden">
+
+      <!-- 1. PRIMARY ACTION CARD -->
+      <section id="card-action" class="card card-action">
+        <!-- Rendered dynamically by components.js -->
+      </section>
+
+      <!-- 2. GRID FOR MARKET & SOURCING -->
+      <div class="results-grid">
+        
+        <!-- Online Market Card -->
+        <section id="card-market" class="card">
+          <!-- Rendered dynamically -->
+        </section>
+
+        <!-- Local Sourcing Card -->
+        <section id="card-local" class="card">
+          <!-- Rendered dynamically -->
+        </section>
+
+      </div>
+
+      <!-- 3. GRID FOR DEMAND & EXTERNAL SIGNALS -->
+      <div class="results-grid">
+        
+        <!-- Demand Signal Card -->
+        <section id="card-demand" class="card">
+          <!-- Rendered dynamically -->
+        </section>
+
+        <!-- External Signals Card -->
+        <section id="card-external" class="card">
+          <!-- Rendered dynamically -->
+        </section>
+
+      </div>
+
+      <!-- 4. SELLER ECONOMICS CARD (IF COST PROVIDED) -->
+      <section id="card-economics" class="card hidden">
+        <!-- Rendered dynamically -->
+      </section>
+
+      <!-- 5. GST TAX REFERENCE CARD -->
+      <section id="card-gst" class="card">
+        <!-- Rendered dynamically -->
+      </section>
+
+      <!-- 6. WHY & EVIDENCE AUDIT TRAIL -->
+      <section id="card-sources" class="card">
+        <!-- Rendered dynamically -->
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>BharatPrice Pulse — Evidence-backed Market Intelligence for Indian MSMEs.</p>
+      <p class="footer-sub">
+        Powered by <a href="https://serpapi.com" target="_blank" rel="noopener">SerpApi</a> (Google Search Hub, Google Shopping, Google Local, Google News, Google Finance, Google Trends).
+      </p>
+      <p class="footer-disclaimer">
+        Disclaimer: Market prices represent observed samples from Google Shopping. Google Local listings indicate merchant presence and category match; physical SKU inventory must be confirmed directly.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/static/js/i18n.js"></script>
+  <script src="/static/js/charts.js"></script>
+  <script src="/static/js/components.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

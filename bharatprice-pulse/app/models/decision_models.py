@@ -244,6 +244,3 @@ class AnalysisResponse(BaseModel):
     # Partial failure notice
     partial_failure: bool = Field(default=False)
     partial_failure_note: Optional[str] = None
-
-    class Config:
-        json_encoders = {datetime: lambda v: v.isoformat()}
