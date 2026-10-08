@@ -16,6 +16,7 @@ from app.models.request_models import NormalizedQuery
 from app.processing.query_normalizer import build_cache_key
 from app.serpapi.client import get_serpapi_client
 from app.utils.datetime_utils import utc_now
+from app.utils.security import safe_float, safe_int
 
 logger = logging.getLogger(__name__)
 
@@ -57,24 +58,12 @@ async def search_google_shopping(
 
     for idx, item in enumerate(shopping_results):
         raw_price = item.get("price")
-        extracted_price = item.get("extracted_price")
+        extracted_price = safe_float(item.get("extracted_price"))
         if extracted_price is None and raw_price:
-            try:
-                extracted_price = float(
-                    str(raw_price).replace("₹", "").replace(",", "").replace("Rs", "").strip()
-                )
-            except Exception:
-                extracted_price = None
+            extracted_price = safe_float(raw_price)
 
         old_price = item.get("old_price")
-        extracted_old_price = None
-        if old_price:
-            try:
-                extracted_old_price = float(
-                    str(old_price).replace("₹", "").replace(",", "").replace("Rs", "").strip()
-                )
-            except Exception:
-                pass
+        extracted_old_price = safe_float(old_price)
 
         items.append(
             ShoppingItem(
@@ -90,8 +79,8 @@ async def search_google_shopping(
                 old_price_inr=extracted_old_price,
                 delivery_info=item.get("delivery"),
                 on_sale=bool(extracted_old_price and extracted_price and extracted_price < extracted_old_price),
-                rating=float(item["rating"]) if item.get("rating") is not None else None,
-                reviews=int(item["reviews"]) if item.get("reviews") is not None else None,
+                rating=safe_float(item.get("rating")),
+                reviews=safe_int(item.get("reviews")),
                 is_small_business=bool(item.get("badges", {}).get("small_business")),
             )
         )

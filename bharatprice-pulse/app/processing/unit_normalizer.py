@@ -107,8 +107,12 @@ def detect_unit_from_title(title: str) -> Tuple[Optional[float], Optional[str]]:
 
     Returns (quantity, unit) or (None, None) if not detectable.
     """
+    # Guard against cellular network generations (2G, 3G, 4G, 5G, 6G) and memory/storage (GB, MB, TB)
+    clean_title = re.sub(r'\b[2-6][gG]\b', ' ', title)
+    clean_title = re.sub(r'\b\d+\s*(?:gb|mb|tb|ghz|mhz)\b', ' ', clean_title, flags=re.IGNORECASE)
+
     for pattern, unit in _TITLE_UNIT_PATTERNS:
-        m = pattern.search(title)
+        m = pattern.search(clean_title)
         if m:
             qty = float(m.group(1))
             # Normalize immediately

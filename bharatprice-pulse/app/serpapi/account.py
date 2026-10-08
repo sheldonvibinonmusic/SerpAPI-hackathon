@@ -15,6 +15,7 @@ import httpx
 from app.config.search_budget import get_budget_controller
 from app.config.settings import get_settings
 from app.models.quota_models import QuotaTelemetry
+from app.utils.security import safe_int
 
 logger = logging.getLogger(__name__)
 
@@ -42,10 +43,10 @@ async def get_account_telemetry() -> QuotaTelemetry:
             if resp.status_code == 200:
                 data = resp.json()
                 # Safely extract ONLY public numbers
-                monthly_limit = int(data.get("searches_per_month", 250))
-                monthly_used = int(data.get("this_month_usage", 0))
+                monthly_limit = safe_int(data.get("searches_per_month")) or 250
+                monthly_used = safe_int(data.get("this_month_usage")) or 0
                 remaining = max(0, monthly_limit - monthly_used)
-                hourly_limit = int(data.get("hourly_rate_limit", 50))
+                hourly_limit = safe_int(data.get("hourly_rate_limit")) or 50
                 
                 return QuotaTelemetry(
                     monthly_limit=monthly_limit,

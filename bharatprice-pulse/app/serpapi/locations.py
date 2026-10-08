@@ -31,10 +31,10 @@ async def canonicalize_location(city: str) -> str:
             resp = await client.get(url, params=params)
             if resp.status_code == 200:
                 locations = resp.json()
-                for loc in locations:
-                    # Prefer Indian locations
-                    if loc.get("country_code") == "IN" or "India" in loc.get("canonical_name", ""):
-                        return loc.get("canonical_name", fallback)
+                if isinstance(locations, list):
+                    for loc in locations:
+                        if isinstance(loc, dict) and (loc.get("country_code") == "IN" or "India" in loc.get("canonical_name", "")):
+                            return loc.get("canonical_name", fallback)
     except Exception as e:
         logger.warning(f"Locations API failed: {e}; using fallback {fallback}")
 

@@ -14,6 +14,13 @@ from typing import Dict, List, Optional, Any
 
 from pydantic import BaseModel, Field
 
+from app.models.evidence_models import (
+    FinanceSignal,
+    LocalMerchant,
+    NewsArticle,
+    TrendsEvidence,
+)
+
 
 # ---------------------------------------------------------------------------
 # Enumerations for decision states
@@ -229,6 +236,10 @@ class AnalysisResponse(BaseModel):
     # Evidence dimensions
     market_metrics: Optional[MarketMetrics] = None
     fusion: Optional[FusionResult] = None
+    local_merchants: List[LocalMerchant] = Field(default_factory=list)
+    trends_evidence: Optional[TrendsEvidence] = None
+    news_articles: List[NewsArticle] = Field(default_factory=list)
+    finance_signals: List[FinanceSignal] = Field(default_factory=list)
 
     # Sources for the Sources/Why panel
     sources: List[SourceRecord] = Field(default_factory=list)

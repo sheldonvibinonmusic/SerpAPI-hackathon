@@ -22,6 +22,7 @@ from app.models.request_models import NormalizedQuery
 from app.processing.query_normalizer import build_cache_key
 from app.serpapi.client import get_serpapi_client
 from app.utils.datetime_utils import utc_now
+from app.utils.security import safe_int
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ async def search_google_trends(
             date_str = pt.get("date", "")
             vals = pt.get("values", [])
             val = vals[0].get("extracted_value", 0) if vals else 0
-            timeseries_points.append(TrendsDataPoint(date=date_str, value=int(val)))
+            timeseries_points.append(TrendsDataPoint(date=date_str, value=safe_int(val) or 0))
 
         # Parse interest by region (Indian states)
         ibr = raw_response.get("interest_by_region", [])
@@ -88,7 +89,7 @@ async def search_google_trends(
         for reg in region_list:
             reg_name = reg.get("location", "")
             reg_val = reg.get("extracted_value", 0)
-            region_points.append(TrendsRegionPoint(location=reg_name, max_value_index=int(reg_val)))
+            region_points.append(TrendsRegionPoint(location=reg_name, max_value_index=safe_int(reg_val) or 0))
 
         return TrendsEvidence(
             evidence_id="g_trend_1",

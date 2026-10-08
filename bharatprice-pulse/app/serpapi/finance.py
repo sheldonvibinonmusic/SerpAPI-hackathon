@@ -18,6 +18,7 @@ from app.models.request_models import NormalizedQuery
 from app.processing.query_normalizer import build_cache_key
 from app.serpapi.client import get_serpapi_client
 from app.utils.datetime_utils import utc_now
+from app.utils.security import safe_float
 
 logger = logging.getLogger(__name__)
 
@@ -80,9 +81,9 @@ async def search_google_finance(
             retrieved_at=now,
             instrument=instrument,
             instrument_label=driver.finance_instrument_label or instrument,
-            current_value=float(price_val) if price_val is not None else None,
-            change_value=float(change_val) if change_val is not None else None,
-            change_percent=float(change_pct) if change_pct is not None else None,
+            current_value=safe_float(price_val),
+            change_value=safe_float(change_val),
+            change_percent=safe_float(change_pct),
             relevance="high" if query.category.value == "electronics_mobiles" else "medium",
             interpretation=driver.why_finance_relevant,
         )

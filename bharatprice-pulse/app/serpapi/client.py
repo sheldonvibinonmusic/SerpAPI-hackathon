@@ -11,6 +11,7 @@ Design rules:
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from pathlib import Path
@@ -80,9 +81,9 @@ class SerpApiClient:
             }
             logger.info(f"[LIVE SERPAPI] Calling {engine} with q={params.get('q', params.get('query', ''))}")
             
-            # Execute synchronously via official client (run in thread if needed)
+            # Execute asynchronously in thread pool to prevent blocking event loop
             sp_client = serpapi.Client(api_key=self.settings.serpapi_key)
-            results = sp_client.search(search_params)
+            results = await asyncio.to_thread(sp_client.search, search_params)
             raw_result = results.as_dict() if hasattr(results, "as_dict") else dict(results)
             validated = validate_serpapi_response(raw_result)
 

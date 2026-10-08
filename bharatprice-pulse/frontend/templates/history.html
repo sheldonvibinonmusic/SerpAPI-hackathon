@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +9,16 @@
 </head>
 <body>
 
+  <!-- Ambient Dynamic Lighting Layer -->
+  <div class="ambient-glow ambient-glow-top" aria-hidden="true"></div>
+
   <!-- Navigation Bar -->
   <header class="app-header">
     <div class="header-container">
       <div class="brand">
-        <span class="flag-icon">🇮🇳</span>
+        <div class="brand-badge">
+          <span class="flag-icon">🇮🇳</span>
+        </div>
         <div>
           <h1 class="brand-title">BharatPrice Pulse</h1>
           <p class="brand-tagline">My Saved Market Checks</p>
@@ -21,6 +26,12 @@
       </div>
 
       <div class="header-actions">
+        <!-- Theme Mode Toggle -->
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme" title="Switch Theme">
+          <span class="theme-icon sun-icon">☀️</span>
+          <span class="theme-icon moon-icon">🌙</span>
+        </button>
+
         <a href="/" class="btn btn-secondary">← Back to Price Check</a>
         <button id="clear-history-btn" class="btn btn-outline-danger">Clear All History</button>
       </div>
@@ -29,13 +40,18 @@
 
   <main class="main-content">
     <section class="history-hero">
-      <h2>Past Market Snapshots</h2>
-      <p>Review past analyses without consuming any SerpApi credits.</p>
+      <div class="history-hero-text">
+        <h2>Past Market Snapshots</h2>
+        <p>Review and audit previous pricing intelligence runs stored in your local SQLite store without expending extra SerpApi credits.</p>
+      </div>
     </section>
 
     <!-- History List Container -->
     <div id="history-list" class="history-grid">
-      <div class="history-loading">Loading saved analyses...</div>
+      <div class="history-loading">
+        <div class="radar-spinner" style="margin: 0 auto 1rem;"></div>
+        Loading saved analyses...
+      </div>
     </div>
   </main>
 
@@ -45,6 +61,7 @@
     </div>
   </footer>
 
+  <script src="/static/js/app.js"></script>
   <script>
     async function loadHistory() {
       const container = document.getElementById('history-list');
@@ -55,9 +72,10 @@
         if (!data.items || data.items.length === 0) {
           container.innerHTML = `
             <div class="card empty-state">
+              <div class="empty-icon">🗂️</div>
               <h3>No market checks saved yet</h3>
               <p>Go to the home screen and run your first market check!</p>
-              <a href="/" class="btn btn-primary" style="margin-top: 1rem;">Run First Analysis</a>
+              <a href="/" class="btn btn-primary" style="margin-top: 1.5rem;">Run First Analysis</a>
             </div>
           `;
           return;
@@ -67,16 +85,16 @@
           <div class="card history-item-card">
             <div class="history-header">
               <span class="history-product">${item.product}</span>
-              <span class="badge badge-${item.action.toLowerCase()}">${item.action_label}</span>
+              <span class="badge badge-${(item.action || 'hold').toLowerCase().replace(/_/g, '-')}">${item.action_label || item.action}</span>
             </div>
             <div class="history-meta">
-              <span>📍 ${item.city}</span>
-              <span>💰 Selling Price: ₹${item.selling_price.toFixed(2)}</span>
-              <span>📅 ${new Date(item.timestamp).toLocaleDateString()}</span>
+              <span class="meta-tag">📍 ${item.city}</span>
+              <span class="meta-tag">💰 ₹${Number(item.selling_price).toFixed(2)}</span>
+              <span class="meta-tag">📅 ${new Date(item.timestamp).toLocaleDateString()}</span>
             </div>
             <div class="history-footer">
-              <span class="badge-confidence">Confidence: ${item.confidence}</span>
-              <span class="history-credits">Used ${item.searches_consumed} credits</span>
+              <span class="badge-confidence">Confidence: ${item.confidence || 'MEDIUM'}</span>
+              <span class="history-credits">Used ${item.searches_consumed || 1} credits</span>
             </div>
           </div>
         `).join('');

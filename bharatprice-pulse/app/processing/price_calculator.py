@@ -244,7 +244,7 @@ def apply_iqr_filtering(
             filtered.append(item)
         else:
             logger.info(
-                f"IQR outlier removed: {item.title!r} at ₹{item.price_inr} "
+                f"IQR outlier removed: {item.title!r} at Rs. {item.price_inr} "
                 f"(fences: [{lower_fence:.2f}, {upper_fence:.2f}])"
             )
             item.exclusion_reason = f"Statistical outlier (IQR filter: outside [{lower_fence:.0f}, {upper_fence:.0f}])"

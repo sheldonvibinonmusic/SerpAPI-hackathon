@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -33,6 +34,12 @@ class HistoryRepository:
                 else None
             )
 
+            selling_price = (
+                response.market_metrics.seller_price
+                if response.market_metrics and response.market_metrics.seller_price is not None
+                else float(re.sub(r"[^\d.]", "", response.seller_price_display) or 0.0)
+            )
+
             async with aiosqlite.connect(self.db_path) as db:
                 await db.execute(
                     """
@@ -48,7 +55,7 @@ class HistoryRepository:
                         response.timestamp.isoformat(),
                         response.product_display,
                         response.location_display,
-                        float(response.seller_price_display.replace("₹", "").replace(",", "").strip()),
+                        selling_price,
                         landed_cost,
                         response.action.value,
                         response.action_label,
@@ -80,7 +87,7 @@ class HistoryRepository:
                                 response.timestamp.isoformat(),
                                 response.product_display,
                                 response.location_display,
-                                float(response.seller_price_display.replace("₹", "").replace(",", "").strip()),
+                                selling_price,
                                 landed_cost,
                                 response.action.value,
                                 response.action_label,

@@ -1,19 +1,22 @@
 /**
  * app.js — BharatPrice Pulse
  * Main browser controller: form handling, asynchronous fetch,
- * progress orchestration, and UI rendering.
+ * theme management, quick samples, progress orchestration, and UI rendering.
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // 1. Initialize i18n
+  // 1. Initialize Theme Engine (Dark/Light mode)
+  initThemeEngine();
+
+  // 2. Initialize i18n
   if (window.i18n) {
     await window.i18n.init();
   }
 
-  // 2. Fetch initial quota telemetry
+  // 3. Fetch initial quota telemetry
   updateQuotaBadge();
 
-  // 3. Language Selector Change Listener
+  // 4. Language Selector Change Listener
   const langSelect = document.getElementById('lang-select');
   if (langSelect) {
     langSelect.addEventListener('change', async (e) => {
@@ -24,12 +27,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 4. Form Submission Listener
+  // 5. Quick Sample Chips Click Handlers
+  document.querySelectorAll('.sample-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const prodEl = document.getElementById('product_raw');
+      const cityEl = document.getElementById('city_raw');
+      const priceEl = document.getElementById('selling_price');
+      const costEl = document.getElementById('landed_cost');
+      if (prodEl) prodEl.value = chip.dataset.product || '';
+      if (cityEl) cityEl.value = chip.dataset.city || '';
+      if (priceEl) priceEl.value = chip.dataset.price || '';
+      if (costEl) costEl.value = chip.dataset.cost || '';
+      
+      // Visual feedback
+      chip.style.transform = 'scale(0.95)';
+      setTimeout(() => { chip.style.transform = ''; }, 150);
+    });
+  });
+
+  // 6. Form Submission Listener
   const form = document.getElementById('analysis-form');
   if (form) {
     form.addEventListener('submit', handleFormSubmit);
   }
 });
+
+/**
+ * Dark/Light Mode Theme Engine with local preference memory
+ */
+function initThemeEngine() {
+  const toggleBtn = document.getElementById('theme-toggle');
+  const storedTheme = localStorage.getItem('bpp_theme') || 
+    (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+
+  document.documentElement.setAttribute('data-theme', storedTheme);
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('bpp_theme', newTheme);
+    });
+  }
+}
 
 /**
  * Update the live SerpApi quota badge in the top nav.
@@ -63,7 +104,6 @@ async function handleFormSubmit(e) {
   const modeRadios = document.getElementsByName('analysis_mode');
 
   const errorBanner = document.getElementById('error-banner');
-  const errorText = document.getElementById('error-text');
   errorBanner.classList.add('hidden');
 
   // Basic Validation
@@ -104,17 +144,16 @@ async function handleFormSubmit(e) {
 
   // UI state: Loading
   const submitBtn = document.getElementById('submit-btn');
-  const btnText = submitBtn.querySelector('.btn-text');
   const btnSpinner = submitBtn.querySelector('.btn-spinner');
   const progressSection = document.getElementById('progress-section');
   const resultsContainer = document.getElementById('results-container');
 
   submitBtn.disabled = true;
-  btnSpinner.classList.remove('hidden');
+  if (btnSpinner) btnSpinner.classList.remove('hidden');
   resultsContainer.classList.add('hidden');
   progressSection.classList.remove('hidden');
 
-  // Simulated progress steps for friendly UX
+  // Progressive steps animation
   const progressInterval = runProgressAnimation();
 
   try {
@@ -139,9 +178,12 @@ async function handleFormSubmit(e) {
     clearInterval(progressInterval);
     showError(err.message || 'Analysis failed. Please check your inputs or try again.');
   } finally {
-    submitBtn.disabled = false;
-    btnSpinner.classList.add('hidden');
-    progressSection.classList.add('hidden');
+    if (submitBtn) submitBtn.disabled = false;
+    if (btnSpinner) btnSpinner.classList.add('hidden');
+    if (progressSection) {
+      progressSection.classList.add('hidden');
+      progressSection.style.display = 'none';
+    }
   }
 }
 
@@ -153,21 +195,26 @@ function runProgressAnimation() {
   const progressMsg = document.getElementById('progress-message');
 
   const steps = [
-    { pct: 20, msg: 'Checking online prices on Google Shopping…' },
-    { pct: 45, msg: 'Finding nearby wholesalers and local sellers…' },
-    { pct: 70, msg: 'Checking recent category news and market events…' },
-    { pct: 90, msg: 'Analyzing consumer search interest and finalizing recommendation…' },
+    { pct: 25, id: 'step-1', msg: 'Checking online prices on Google Shopping…' },
+    { pct: 50, id: 'step-2', msg: 'Finding nearby wholesalers and local sellers…' },
+    { pct: 75, id: 'step-3', msg: 'Checking recent category news and market events…' },
+    { pct: 95, id: 'step-4', msg: 'Analyzing consumer search interest & finalizing recommendation…' },
   ];
 
   let currentStep = 0;
-  progressBar.style.width = '10%';
-  progressMsg.textContent = steps[0].msg;
+  if (progressBar) progressBar.style.width = '15%';
+  if (progressMsg && steps[0]) progressMsg.textContent = steps[0].msg;
 
   return setInterval(() => {
     currentStep++;
     if (currentStep < steps.length) {
-      progressBar.style.width = `${steps[currentStep].pct}%`;
-      progressMsg.textContent = steps[currentStep].msg;
+      if (progressBar) progressBar.style.width = `${steps[currentStep].pct}%`;
+      if (progressMsg) progressMsg.textContent = steps[currentStep].msg;
+      
+      // Update step chip indicators
+      document.querySelectorAll('.step-chip').forEach(chip => chip.classList.remove('active'));
+      const activeChip = document.getElementById(steps[currentStep].id);
+      if (activeChip) activeChip.classList.add('active');
     }
   }, 1200);
 }
@@ -177,71 +224,107 @@ function runProgressAnimation() {
  */
 function renderAnalysisResults(data, sellerPrice, costPrice) {
   const container = document.getElementById('results-container');
-  container.classList.remove('hidden');
+  if (container) container.classList.remove('hidden');
+
+  // Dismiss progress bar immediately
+  const progressSection = document.getElementById('progress-section');
+  if (progressSection) {
+    progressSection.classList.add('hidden');
+    progressSection.style.display = 'none';
+  }
+
+  // Hide any previous error banner
+  const errorBanner = document.getElementById('error-banner');
+  if (errorBanner) errorBanner.classList.add('hidden');
 
   // 1. Primary Action Card
   const actionCard = document.getElementById('card-action');
-  actionCard.innerHTML = Components.renderActionCard(
-    data.action,
-    data.action_label,
-    data.explanation,
-    data.fusion
-  );
+  if (actionCard) {
+    actionCard.innerHTML = Components.renderActionCard(
+      data.action,
+      data.action_label,
+      data.explanation,
+      data.fusion
+    );
+  }
 
   // 2. Online Market Card
   const marketCard = document.getElementById('card-market');
-  marketCard.innerHTML = Components.renderMarketCard(data.market_metrics, sellerPrice);
+  if (marketCard) {
+    marketCard.innerHTML = Components.renderMarketCard(data.market_metrics, sellerPrice);
+  }
 
   // 3. Local Sourcing Card
   const localCard = document.getElementById('card-local');
-  const merchants = (data.fusion && data.fusion.local_merchants_found > 0) ?
-    (data.sources ? data.sources.filter(s => s.source_type === 'Local Discovery') : []) : [];
-  localCard.innerHTML = Components.renderLocalCard(merchants, data.location_display);
+  if (localCard) {
+    const merchants = (Array.isArray(data.local_merchants) && data.local_merchants.length > 0)
+      ? data.local_merchants
+      : ((Array.isArray(data.sources)) ? data.sources.filter(s => s.source_type === 'Local Discovery') : []);
+    localCard.innerHTML = Components.renderLocalCard(merchants, data.location_display || 'Your Area');
+  }
 
   // 4. Consumer Demand Card
   const demandCard = document.getElementById('card-demand');
-  // Reconstruct minimal trends display from explanation/fusion if present
-  demandCard.innerHTML = Components.renderDemandCard(data.trends_evidence || null);
+  if (demandCard) {
+    demandCard.innerHTML = Components.renderDemandCard(data.trends_evidence || null);
+  }
 
   // 5. External Signals Card
   const externalCard = document.getElementById('card-external');
-  const newsSources = data.sources ? data.sources.filter(s => s.source_type === 'News Event') : [];
-  externalCard.innerHTML = Components.renderExternalCard(newsSources, []);
+  if (externalCard) {
+    const newsList = (Array.isArray(data.news_articles) && data.news_articles.length > 0)
+      ? data.news_articles
+      : ((Array.isArray(data.sources)) ? data.sources.filter(s => s.source_type === 'News Event') : []);
+    const finList = (Array.isArray(data.finance_signals) && data.finance_signals.length > 0)
+      ? data.finance_signals
+      : [];
+    externalCard.innerHTML = Components.renderExternalCard(newsList, finList);
+  }
 
   // 6. Seller Economics Card (if cost supplied)
   const econCard = document.getElementById('card-economics');
-  if (costPrice && data.market_metrics) {
-    econCard.innerHTML = Components.renderEconomicsCard(data.market_metrics, costPrice);
-    econCard.classList.remove('hidden');
-  } else {
-    econCard.classList.add('hidden');
+  if (econCard) {
+    if (costPrice && data.market_metrics) {
+      econCard.innerHTML = Components.renderEconomicsCard(data.market_metrics, costPrice);
+      econCard.classList.remove('hidden');
+    } else {
+      econCard.classList.add('hidden');
+    }
   }
 
   // 7. GST Reference Card
   const gstCard = document.getElementById('card-gst');
-  if (data.gst_reference_display) {
-    gstCard.innerHTML = Components.renderGSTCard(data.gst_reference_display);
-    gstCard.classList.remove('hidden');
-  } else {
-    gstCard.classList.add('hidden');
+  if (gstCard) {
+    if (data.gst_reference_display) {
+      gstCard.innerHTML = Components.renderGSTCard(data.gst_reference_display);
+      gstCard.classList.remove('hidden');
+    } else {
+      gstCard.classList.add('hidden');
+    }
   }
 
   // 8. Sources Provenance Card
   const sourcesCard = document.getElementById('card-sources');
-  sourcesCard.innerHTML = Components.renderSourcesCard(
-    data.sources,
-    data.searches_consumed,
-    data.searches_from_cache
-  );
+  if (sourcesCard) {
+    sourcesCard.innerHTML = Components.renderSourcesCard(
+      data.sources || [],
+      data.searches_consumed,
+      data.searches_from_cache
+    );
+  }
 
-  // Scroll smoothly to results
-  actionCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Smooth cinematic scroll to results
+  if (actionCard) {
+    actionCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 function showError(msg) {
   const banner = document.getElementById('error-banner');
   const text = document.getElementById('error-text');
-  text.textContent = msg;
-  banner.classList.remove('hidden');
-  banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (text) text.textContent = msg;
+  if (banner) {
+    banner.classList.remove('hidden');
+    banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 }

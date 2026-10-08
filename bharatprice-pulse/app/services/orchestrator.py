@@ -70,6 +70,29 @@ async def run_analysis(request: AnalysisRequest) -> AnalysisResponse:
     # 2. Initialize search budget
     budget = budget_ctrl.create_budget(analysis_id, query.analysis_mode.value)
 
+    try:
+        return await _execute_analysis(
+            request=request,
+            query=query,
+            budget=budget,
+            analysis_id=analysis_id,
+            now=now,
+            settings=settings,
+            history_repo=history_repo,
+        )
+    finally:
+        budget_ctrl.cleanup_budget(analysis_id)
+
+
+async def _execute_analysis(
+    request: AnalysisRequest,
+    query: NormalizedQuery,
+    budget: Any,
+    analysis_id: str,
+    now: datetime,
+    settings: Any,
+    history_repo: Any,
+) -> AnalysisResponse:
     # 3. Create category-driven search plan
     plan = create_search_plan(query, budget)
 
@@ -184,7 +207,9 @@ async def run_analysis(request: AnalysisRequest) -> AnalysisResponse:
     seen_titles = set()
     deduped_items: List[ShoppingItem] = []
     for item in bundle.shopping_items:
-        t = item.title.strip().lower()
+        t = (item.title or "").strip().lower()
+        if not t:
+            continue
         if t not in seen_titles:
             seen_titles.add(t)
             deduped_items.append(item)
@@ -293,6 +318,10 @@ async def run_analysis(request: AnalysisRequest) -> AnalysisResponse:
         explanation=explanation,
         market_metrics=metrics,
         fusion=fusion,
+        local_merchants=bundle.local_merchants,
+        trends_evidence=bundle.trends_evidence,
+        news_articles=bundle.news_articles,
+        finance_signals=bundle.finance_signals,
         sources=sources,
         searches_consumed=budget.consumed,
         searches_from_cache=budget.from_cache,
@@ -307,9 +336,6 @@ async def run_analysis(request: AnalysisRequest) -> AnalysisResponse:
 
     # 18. Save to persistent SQLite history (async fire-and-forget or await)
     await history_repo.save(response)
-
-    # Cleanup in-memory budget
-    budget_ctrl.cleanup_budget(analysis_id)
 
     logger.info(f"[{analysis_id}] Analysis completed successfully with action {action.value}")
     return response

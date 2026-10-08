@@ -18,6 +18,7 @@ from app.models.request_models import NormalizedQuery
 from app.processing.query_normalizer import build_cache_key
 from app.serpapi.client import get_serpapi_client
 from app.utils.datetime_utils import utc_now
+from app.utils.security import safe_float, safe_int
 
 logger = logging.getLogger(__name__)
 
@@ -88,8 +89,8 @@ async def search_google_local(
                 description=place.get("description"),
                 is_open=place.get("open_now") or (place.get("hours").get("open_now") if isinstance(place.get("hours"), dict) else None),
                 hours=place.get("hours"),
-                rating=float(place["rating"]) if place.get("rating") is not None else None,
-                reviews=int(place["reviews"]) if place.get("reviews") is not None else None,
+                rating=safe_float(place.get("rating")),
+                reviews=safe_int(place.get("reviews")),
                 price_level=place.get("price"),
                 inventory_claimed=False,  # Enforce guardrail: never claim inventory
             )

@@ -1,19 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BharatPrice Pulse — Market Decision Copilot for Indian Retailers</title>
+  <title>BharatPrice Pulse — Real-Time Market Copilot</title>
   <link rel="stylesheet" href="/static/css/style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇮🇳</text></svg>">
 </head>
 <body>
 
+  <!-- Ambient Dynamic Lighting Layer -->
+  <div class="ambient-glow ambient-glow-top" aria-hidden="true"></div>
+  <div class="ambient-glow ambient-glow-bottom" aria-hidden="true"></div>
+
+  <!-- Accessibility Skip Link -->
+  <a href="#analysis-form" class="skip-link">Skip to price check</a>
+
   <!-- Navigation Bar -->
   <header class="app-header">
     <div class="header-container">
       <div class="brand">
-        <span class="flag-icon">🇮🇳</span>
+        <div class="brand-badge">
+          <span class="flag-icon">🇮🇳</span>
+          <span class="pulse-ring"></span>
+        </div>
         <div>
           <h1 class="brand-title" data-i18n="app.name">BharatPrice Pulse</h1>
           <p class="brand-tagline" data-i18n="app.tagline">Smart Pricing for Indian Retailers</p>
@@ -23,14 +33,15 @@
       <div class="header-actions">
         <!-- Live SerpApi Quota Telemetry Widget -->
         <div id="quota-badge" class="quota-badge" title="Live SerpApi Search Allowance">
+          <span class="quota-dot"></span>
           <span class="quota-icon">⚡</span>
           <span id="quota-text" data-i18n="quota.unknown">Checking...</span>
         </div>
 
         <!-- Language Selector -->
-        <div class="lang-selector">
+        <div class="lang-selector-wrap">
           <label for="lang-select" class="visually-hidden">Choose Language</label>
-          <select id="lang-select" class="lang-select">
+          <select id="lang-select" class="lang-select" aria-label="Select Language">
             <option value="en">English</option>
             <option value="hi">हिंदी (Hindi)</option>
             <option value="mr">मराठी (Marathi)</option>
@@ -42,7 +53,16 @@
           </select>
         </div>
 
-        <a href="/history" class="nav-link" data-i18n="app.nav_history">My History</a>
+        <!-- Theme Mode Toggle -->
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light theme" title="Switch Theme">
+          <span class="theme-icon sun-icon">☀️</span>
+          <span class="theme-icon moon-icon">🌙</span>
+        </button>
+
+        <a href="/history" class="nav-history-btn" data-i18n="app.nav_history">
+          <span>📊</span>
+          <span class="nav-btn-label">My History</span>
+        </a>
       </div>
     </div>
   </header>
@@ -52,6 +72,10 @@
     
     <!-- Hero / Headline -->
     <section class="hero-section">
+      <div class="hero-pill">
+        <span class="hero-pill-sparkle">✦</span>
+        <span>Real-Time Grounded Market Intelligence</span>
+      </div>
       <h2 class="hero-title">
         <span data-i18n="hero.title">Know Your Market,</span>
         <span class="hero-accent" data-i18n="hero.title_accent">Price with Confidence</span>
@@ -59,11 +83,28 @@
       <p class="hero-subtitle" data-i18n="hero.subtitle">
         Compare your price with online markets and nearby sellers in seconds. Designed for Indian shopkeepers.
       </p>
+
+      <!-- Quick Test Chips -->
+      <div class="quick-samples">
+        <span class="quick-samples-label">Quick Try:</span>
+        <button type="button" class="sample-chip" data-product="Fortune Mustard Oil 1L" data-city="Jaipur" data-price="145" data-cost="125">Fortune Mustard Oil 1L</button>
+        <button type="button" class="sample-chip" data-product="Basmati Rice 5kg" data-city="Pune" data-price="420" data-cost="360">Basmati Rice 5kg</button>
+        <button type="button" class="sample-chip" data-product="Samsung Galaxy M14 5G" data-city="Delhi" data-price="12499" data-cost="11500">Samsung Galaxy M14 5G</button>
+      </div>
     </section>
 
     <!-- Main Seller Form Card -->
     <section class="card form-card">
-      <h3 class="card-title" data-i18n="form.title">Check Your Price Now</h3>
+      <div class="card-glow-border"></div>
+      <div class="form-header-row">
+        <div>
+          <h3 class="card-title" data-i18n="form.title">Check Your Price Now</h3>
+          <p class="form-subheading">Get observed market medians, local wholesale discoveries, and profit margin analysis</p>
+        </div>
+        <div class="live-status-pill">
+          <span class="live-dot"></span> LIVE SCANNER
+        </div>
+      </div>
 
       <form id="analysis-form" class="seller-form" novalidate>
         
@@ -71,61 +112,73 @@
           <!-- Product Input -->
           <div class="form-group span-2">
             <label for="product_raw" class="form-label" data-i18n="form.product_label">What are you selling?</label>
-            <input 
-              type="text" 
-              id="product_raw" 
-              name="product_raw" 
-              class="form-control" 
-              data-i18n-placeholder="form.product_placeholder" 
-              placeholder="e.g. Fortune Mustard Oil 1L, Samsung Galaxy M14 5G, Basmati Rice 5kg" 
-              required
-            >
+            <div class="input-glow-wrap">
+              <span class="input-icon">📦</span>
+              <input 
+                type="text" 
+                id="product_raw" 
+                name="product_raw" 
+                class="form-control" 
+                data-i18n-placeholder="form.product_placeholder" 
+                placeholder="e.g. Fortune Mustard Oil 1L, Samsung Galaxy M14 5G, Basmati Rice 5kg" 
+                required
+              >
+            </div>
             <small class="form-hint" data-i18n="form.product_hint">Be specific — include brand, size or model if you know it</small>
           </div>
 
           <!-- City / Location Input -->
           <div class="form-group">
             <label for="city_raw" class="form-label" data-i18n="form.city_label">Where do you sell?</label>
-            <input 
-              type="text" 
-              id="city_raw" 
-              name="city_raw" 
-              class="form-control" 
-              data-i18n-placeholder="form.city_placeholder" 
-              placeholder="e.g. Jaipur, Pune, Delhi, Kolkata" 
-              required
-            >
+            <div class="input-glow-wrap">
+              <span class="input-icon">📍</span>
+              <input 
+                type="text" 
+                id="city_raw" 
+                name="city_raw" 
+                class="form-control" 
+                data-i18n-placeholder="form.city_placeholder" 
+                placeholder="e.g. Jaipur, Pune, Delhi, Kolkata" 
+                required
+              >
+            </div>
             <small class="form-hint" data-i18n="form.city_hint">Your city helps us find local market prices</small>
           </div>
 
           <!-- Selling Price Input -->
           <div class="form-group">
             <label for="selling_price" class="form-label" data-i18n="form.sell_price_label">Your selling price (₹)</label>
-            <input 
-              type="number" 
-              id="selling_price" 
-              name="selling_price" 
-              step="0.01" 
-              min="0.01" 
-              class="form-control" 
-              placeholder="175.00" 
-              required
-            >
+            <div class="input-glow-wrap price-wrap">
+              <span class="input-prefix">₹</span>
+              <input 
+                type="number" 
+                id="selling_price" 
+                name="selling_price" 
+                step="0.01" 
+                min="0.01" 
+                class="form-control has-prefix" 
+                placeholder="175.00" 
+                required
+              >
+            </div>
             <small class="form-hint" data-i18n="form.sell_price_hint">The price you currently charge your customers</small>
           </div>
 
           <!-- Cost Price Input (Optional) -->
-          <div class="form-group">
+          <div class="form-group span-2">
             <label for="landed_cost" class="form-label" data-i18n="form.cost_price_label">Your purchase price (₹)</label>
-            <input 
-              type="number" 
-              id="landed_cost" 
-              name="landed_cost" 
-              step="0.01" 
-              min="0.01" 
-              class="form-control" 
-              placeholder="142.00 (optional)"
-            >
+            <div class="input-glow-wrap price-wrap">
+              <span class="input-prefix">₹</span>
+              <input 
+                type="number" 
+                id="landed_cost" 
+                name="landed_cost" 
+                step="0.01" 
+                min="0.01" 
+                class="form-control has-prefix" 
+                placeholder="142.00 (optional)"
+              >
+            </div>
             <small class="form-hint" data-i18n="form.cost_price_hint">What you paid for it — we'll calculate your margin</small>
           </div>
 
@@ -136,7 +189,10 @@
               <label class="mode-option">
                 <input type="radio" name="analysis_mode" value="quick">
                 <div class="mode-box">
-                  <span class="mode-title" data-i18n="form.mode_quick_name">Quick Check</span>
+                  <div class="mode-box-header">
+                    <span class="mode-badge badge-quick">⚡ FAST</span>
+                    <span class="mode-title" data-i18n="form.mode_quick_name">Quick Check</span>
+                  </div>
                   <span class="mode-desc" data-i18n="form.mode_quick_desc">Checks online prices only. Fast results in under 10 seconds.</span>
                 </div>
               </label>
@@ -144,7 +200,10 @@
               <label class="mode-option">
                 <input type="radio" name="analysis_mode" value="standard" checked>
                 <div class="mode-box">
-                  <span class="mode-title" data-i18n="form.mode_standard_name">Standard Check</span>
+                  <div class="mode-box-header">
+                    <span class="mode-badge badge-standard">⭐ RECOMMENDED</span>
+                    <span class="mode-title" data-i18n="form.mode_standard_name">Standard Check</span>
+                  </div>
                   <span class="mode-desc" data-i18n="form.mode_standard_desc">Online prices + local sourcing + demand trends. Best for most decisions.</span>
                 </div>
               </label>
@@ -152,7 +211,10 @@
               <label class="mode-option">
                 <input type="radio" name="analysis_mode" value="deep">
                 <div class="mode-box">
-                  <span class="mode-title" data-i18n="form.mode_deep_name">Deep Check</span>
+                  <div class="mode-box-header">
+                    <span class="mode-badge badge-deep">🔬 DEEP</span>
+                    <span class="mode-title" data-i18n="form.mode_deep_name">Deep Check</span>
+                  </div>
                   <span class="mode-desc" data-i18n="form.mode_deep_desc">Everything in Standard + latest news + finance signals + photo scan.</span>
                 </div>
               </label>
@@ -162,8 +224,10 @@
 
         <div class="form-actions">
           <button type="submit" id="submit-btn" class="btn btn-primary btn-large">
+            <span class="btn-shine"></span>
             <span class="btn-text" data-i18n="form.submit_btn">Check My Market</span>
             <span class="btn-spinner hidden"></span>
+            <span class="btn-arrow">→</span>
           </button>
         </div>
 
@@ -172,17 +236,31 @@
 
     <!-- Progress Status Box (Hidden by default) -->
     <section id="progress-section" class="card progress-card hidden">
-      <h3 class="progress-title" data-i18n="progress.title">Checking the market for you…</h3>
+      <div class="progress-header">
+        <div class="radar-spinner"></div>
+        <div>
+          <h3 class="progress-title" data-i18n="progress.title">Checking the market for you…</h3>
+          <p id="progress-message" class="progress-msg">Starting search...</p>
+        </div>
+      </div>
       <div class="progress-bar-container">
         <div id="progress-bar" class="progress-bar-fill"></div>
       </div>
-      <p id="progress-message" class="progress-msg">Starting search...</p>
+      <div class="progress-steps-list">
+        <div class="step-chip active" id="step-1">1. Shopping Sites</div>
+        <div class="step-chip" id="step-2">2. Local Sourcing</div>
+        <div class="step-chip" id="step-3">3. Category Events</div>
+        <div class="step-chip" id="step-4">4. Trend Synthesis</div>
+      </div>
     </section>
 
     <!-- Error Banner (Hidden by default) -->
     <div id="error-banner" class="alert alert-danger hidden" role="alert">
       <span class="alert-icon">⚠️</span>
-      <span id="error-text">An error occurred.</span>
+      <div class="alert-content">
+        <strong>Operation Alert</strong>
+        <p id="error-text">An error occurred.</p>
+      </div>
     </div>
 
     <!-- Results Section (Hidden until analysis returns) -->
@@ -197,12 +275,12 @@
       <div class="results-grid">
         
         <!-- Online Market Card -->
-        <section id="card-market" class="card">
+        <section id="card-market" class="card card-result">
           <!-- Rendered dynamically -->
         </section>
 
         <!-- Local Sourcing Card -->
-        <section id="card-local" class="card">
+        <section id="card-local" class="card card-result">
           <!-- Rendered dynamically -->
         </section>
 
@@ -212,29 +290,29 @@
       <div class="results-grid">
         
         <!-- Demand Signal Card -->
-        <section id="card-demand" class="card">
+        <section id="card-demand" class="card card-result">
           <!-- Rendered dynamically -->
         </section>
 
         <!-- External Signals Card -->
-        <section id="card-external" class="card">
+        <section id="card-external" class="card card-result">
           <!-- Rendered dynamically -->
         </section>
 
       </div>
 
       <!-- 4. SELLER ECONOMICS CARD (IF COST PROVIDED) -->
-      <section id="card-economics" class="card hidden">
+      <section id="card-economics" class="card card-result hidden">
         <!-- Rendered dynamically -->
       </section>
 
       <!-- 5. GST TAX REFERENCE CARD -->
-      <section id="card-gst" class="card">
+      <section id="card-gst" class="card card-result">
         <!-- Rendered dynamically -->
       </section>
 
       <!-- 6. WHY & EVIDENCE AUDIT TRAIL -->
-      <section id="card-sources" class="card">
+      <section id="card-sources" class="card card-result">
         <!-- Rendered dynamically -->
       </section>
 
@@ -245,13 +323,20 @@
   <!-- Footer -->
   <footer class="app-footer">
     <div class="footer-container">
-      <p>BharatPrice Pulse — Evidence-backed Market Intelligence for Indian MSMEs.</p>
-      <p class="footer-sub">
-        Powered by <a href="https://serpapi.com" target="_blank" rel="noopener">SerpApi</a> (Google Search Hub, Google Shopping, Google Local, Google News, Google Finance, Google Trends).
-      </p>
-      <p class="footer-disclaimer">
-        Disclaimer: Market prices represent observed samples from Google Shopping. Google Local listings indicate merchant presence and category match; physical SKU inventory must be confirmed directly.
-      </p>
+      <div class="footer-brand-wrap">
+        <div class="brand">
+          <span class="flag-icon">🇮🇳</span>
+          <span class="brand-title">BharatPrice Pulse</span>
+        </div>
+        <p class="footer-sub">
+          Evidence-backed Market Intelligence for Indian MSMEs & Kirana Retailers. Powered by <strong>SerpApi</strong>.
+        </p>
+      </div>
+      <div class="footer-disclaimer-box">
+        <p class="footer-disclaimer">
+          <strong>Notice:</strong> Observed market prices reflect sampled public internet listings via Google Shopping. Google Local listings indicate merchant presence and category match; physical inventory and spot billing must be confirmed directly.
+        </p>
+      </div>
     </div>
   </footer>
 

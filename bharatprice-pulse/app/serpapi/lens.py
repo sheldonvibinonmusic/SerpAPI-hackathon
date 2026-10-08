@@ -15,6 +15,7 @@ from app.config.settings import get_settings
 from app.models.evidence_models import EvidenceSource, ShoppingItem
 from app.serpapi.client import get_serpapi_client
 from app.utils.datetime_utils import utc_now
+from app.utils.security import safe_float, safe_int
 
 logger = logging.getLogger(__name__)
 
@@ -60,9 +61,9 @@ async def search_google_lens(
                     title=match.get("title", ""),
                     source_name=match.get("source"),
                     product_link=match.get("link"),
-                    price_inr=float(extracted_price) if extracted_price else None,
-                    rating=match.get("rating"),
-                    reviews=match.get("reviews"),
+                    price_inr=safe_float(extracted_price),
+                    rating=safe_float(match.get("rating")),
+                    reviews=safe_int(match.get("reviews")),
                 )
             )
         return items

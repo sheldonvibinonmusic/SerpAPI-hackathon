@@ -27,6 +27,7 @@ from app.models.request_models import NormalizedQuery
 from app.processing.query_normalizer import build_cache_key
 from app.serpapi.client import get_serpapi_client
 from app.utils.datetime_utils import utc_now
+from app.utils.security import safe_float, safe_int
 
 logger = logging.getLogger(__name__)
 
@@ -80,12 +81,9 @@ async def search_google_hub(
     inline_shopping = raw_response.get("shopping_results", [])
     for idx, item in enumerate(inline_shopping):
         raw_price = item.get("price")
-        extracted_price = item.get("extracted_price")
+        extracted_price = safe_float(item.get("extracted_price"))
         if extracted_price is None and raw_price:
-            try:
-                extracted_price = float(raw_price.replace("₹", "").replace(",", "").replace("Rs", "").strip())
-            except Exception:
-                pass
+            extracted_price = safe_float(raw_price)
 
         result.shopping_items.append(
             ShoppingItem(
@@ -95,16 +93,22 @@ async def search_google_hub(
                 title=item.get("title", ""),
                 source_name=item.get("source"),
                 product_link=item.get("link"),
-                price_raw=raw_price,
+                price_raw=str(raw_price) if raw_price is not None else None,
                 price_inr=extracted_price,
-                rating=item.get("rating"),
-                reviews=item.get("reviews"),
+                rating=safe_float(item.get("rating")),
+                reviews=safe_int(item.get("reviews")),
             )
         )
 
     # 2. Parse local pack results if present
     local_results = raw_response.get("local_results", {})
-    places = local_results.get("places", []) if isinstance(local_results, dict) else []
+    if isinstance(local_results, list):
+        places = local_results
+    elif isinstance(local_results, dict):
+        places = local_results.get("places", [])
+    else:
+        places = []
+
     for idx, place in enumerate(places):
         result.local_merchants.append(
             LocalMerchant(
@@ -117,8 +121,8 @@ async def search_google_hub(
                 address=place.get("address"),
                 phone=place.get("phone"),
                 type=place.get("type"),
-                rating=place.get("rating"),
-                reviews=place.get("reviews"),
+                rating=safe_float(place.get("rating")),
+                reviews=safe_int(place.get("reviews")),
                 is_open=place.get("open_now"),
                 inventory_claimed=False,
             )

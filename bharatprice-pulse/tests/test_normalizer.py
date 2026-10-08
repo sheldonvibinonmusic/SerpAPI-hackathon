@@ -53,3 +53,17 @@ def test_deterministic_cache_key():
     k3 = build_cache_key("google", "fortune mustard oil 1l", "delhi", "en")
     assert k1 == k2
     assert k1 != k3
+
+
+def test_smartphone_5g_not_normalized_as_grams():
+    req = AnalysisRequest(
+        product_raw="Samsung Galaxy M14 5G 128GB",
+        city_raw="Mumbai",
+        selling_price=13500.0,
+    )
+    norm = normalize_request(req)
+    assert norm.brand == "Samsung"
+    assert norm.quantity is None
+    assert norm.base_unit is None
+    assert norm.category == ProductCategory.ELECTRONICS_MOBILES
+

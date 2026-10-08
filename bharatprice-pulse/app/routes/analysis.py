@@ -63,7 +63,7 @@ async def get_past_analysis(analysis_id: str) -> Dict[str, Any]:
 )
 async def upload_image(file: UploadFile = File(...)) -> Dict[str, str]:
     """Upload photo to SerpApi Image API and return temporary image_id."""
-    if not file.content_type.startswith("image/"):
+    if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Uploaded file must be an image.")
 
     content = await file.read()

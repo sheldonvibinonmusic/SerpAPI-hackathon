@@ -150,25 +150,29 @@ def normalize_text(text: str) -> str:
 
 def extract_quantity_and_unit(text: str) -> Tuple[Optional[float], Optional[str]]:
     """Extract quantity and unit from product text. Returns (quantity, unit)."""
+    # Guard against cellular technology (2G, 3G, 4G, 5G, 6G) and storage (GB, TB, MB, GHz)
+    clean_text = re.sub(r'\b[2-6][gG]\b', ' ', text)
+    clean_text = re.sub(r'\b\d+\s*(?:gb|mb|tb|ghz|mhz)\b', ' ', clean_text, flags=re.IGNORECASE)
+
     # Handle "half" patterns
-    if HALF_PATTERNS.search(text):
+    if HALF_PATTERNS.search(clean_text):
         for pat, unit in UNIT_PATTERNS[2:4]:  # kg/g patterns
-            m = pat.search(text)
+            m = pat.search(clean_text)
             if m:
                 return 0.5, unit
         return 0.5, 'kg'  # Default for "half" without unit
 
     # Handle "quarter" patterns
-    if QUARTER_PATTERNS.search(text):
+    if QUARTER_PATTERNS.search(clean_text):
         return 0.25, 'kg'
 
     # Handle "dozen"
-    if re.search(r'\bdozen\b', text, re.IGNORECASE):
+    if re.search(r'\bdozen\b', clean_text, re.IGNORECASE):
         return 12.0, 'pcs'
 
     # Standard unit patterns
     for pattern, unit in UNIT_PATTERNS:
-        m = pattern.search(text)
+        m = pattern.search(clean_text)
         if m:
             qty = float(m.group(1))
             # Convert ml to L, g to kg for canonical representation
@@ -179,7 +183,7 @@ def extract_quantity_and_unit(text: str) -> Tuple[Optional[float], Optional[str]
             return qty, unit
 
     # Fallback: look for bare number + pcs/pieces
-    m = re.search(r'\b(\d+)\s*(?:pieces?|pcs?|units?|nos?|item)\b', text, re.IGNORECASE)
+    m = re.search(r'\b(\d+)\s*(?:pieces?|pcs?|units?|nos?|item)\b', clean_text, re.IGNORECASE)
     if m:
         return float(m.group(1)), 'pcs'
 
@@ -336,7 +340,7 @@ def normalize_request(request: AnalysisRequest) -> NormalizedQuery:
     product_name = ' '.join(product_name.split()).strip()
 
     # Category detection
-    category, category_confidence = detect_category(product_raw, brand=[brand] if brand else None)
+    category, category_confidence = detect_category(product_raw, brand=brand)
 
     # --- City normalization ---
     city_normalized = city_raw.strip().title()

@@ -1,7 +1,6 @@
 /**
  * charts.js — BharatPrice Pulse
- * Pure CSS & SVG charts — Zero external libraries (No Chart.js, No D3).
- * Extremely lightweight, instant rendering, 100% offline reproducible.
+ * Pure CSS & SVG charts — Ultra-lightweight, reactive, zero external libraries.
  */
 
 window.Charts = {
@@ -12,24 +11,21 @@ window.Charts = {
   buildPriceRangeBar(min, q1, median, q3, max, sellerPrice) {
     if (!min || !max || min >= max) return '';
 
-    // Calculate percentages on the scale [min, max] with a 10% visual padding
     const rangeSpan = (max - min) * 1.2 || 1;
     const baseMin = Math.max(0, min - (max - min) * 0.1);
     
-    const toPercent = val => Math.min(100, Math.max(0, ((val - baseMin) / rangeSpan) * 100));
+    const toPercent = val => Math.min(98, Math.max(2, ((val - baseMin) / rangeSpan) * 100));
 
-    const pMin = toPercent(min);
     const pQ1 = toPercent(q1 || min);
     const pMed = toPercent(median);
     const pQ3 = toPercent(q3 || max);
-    const pMax = toPercent(max);
     const pSeller = toPercent(sellerPrice);
 
     return `
       <div class="price-range-widget">
         <div class="range-labels">
           <span>Min: ₹${min.toFixed(0)}</span>
-          <span class="range-label-median">Median: ₹${median.toFixed(0)}</span>
+          <span style="color: var(--color-text);">Median: ₹${median.toFixed(0)}</span>
           <span>Max: ₹${max.toFixed(0)}</span>
         </div>
 
@@ -38,7 +34,7 @@ window.Charts = {
           <div class="range-track"></div>
           
           <!-- Middle 50% IQR band -->
-          <div class="range-iqr-band" style="left: ${pQ1}%; width: ${Math.max(2, pQ3 - pQ1)}%;"></div>
+          <div class="range-iqr-band" style="left: ${pQ1}%; width: ${Math.max(4, pQ3 - pQ1)}%;"></div>
           
           <!-- Median tick -->
           <div class="range-median-marker" style="left: ${pMed}%;" title="Market Median: ₹${median.toFixed(2)}"></div>
@@ -51,8 +47,8 @@ window.Charts = {
         </div>
 
         <div class="range-legend">
-          <span class="legend-iqr"><span class="iqr-swatch"></span> Middle 50% of Online Sellers</span>
-          <span class="legend-seller"><span class="seller-swatch"></span> Your Current Price</span>
+          <span><span class="iqr-swatch"></span> Middle 50% Range</span>
+          <span><span class="seller-swatch"></span> Your Shelf Price</span>
         </div>
       </div>
     `;
@@ -62,16 +58,17 @@ window.Charts = {
    * SVG sparkline of Google Trends search interest over time.
    */
   buildTrendSparkline(points) {
-    if (!points || points.length < 2) return '<p class="text-muted">Insufficient trend history.</p>';
+    if (!points || !Array.isArray(points) || points.length < 2) return '<p class="form-hint">Insufficient trend history.</p>';
 
-    const width = 300;
-    const height = 60;
-    const maxVal = Math.max(...points.map(p => p.value), 100);
+    const width = 320;
+    const height = 65;
+    const values = points.map(p => Number(p?.value) || 0);
+    const maxVal = Math.max(...values, 100);
     const minVal = 0;
 
     const coords = points.map((p, i) => {
-      const x = (i / (points.length - 1)) * (width - 10) + 5;
-      const y = height - 5 - ((p.value - minVal) / (maxVal - minVal)) * (height - 15);
+      const x = (i / (points.length - 1)) * (width - 20) + 10;
+      const y = height - 10 - (((Number(p?.value) || 0) - minVal) / (maxVal - minVal)) * (height - 20);
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     });
 
@@ -80,12 +77,21 @@ window.Charts = {
     return `
       <div class="trend-sparkline-container">
         <svg viewBox="0 0 ${width} ${height}" class="trend-sparkline-svg">
-          <path d="${pathD}" fill="none" stroke="var(--color-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-          ${coords.map(c => `<circle cx="${c.split(',')[0]}" cy="${c.split(',')[1]}" r="2" fill="var(--color-accent)" />`).join('')}
+          <defs>
+            <linearGradient id="trendGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="var(--saffron-primary)" />
+              <stop offset="100%" stop-color="var(--emerald-success)" />
+            </linearGradient>
+          </defs>
+          <path d="${pathD}" fill="none" stroke="url(#trendGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+          ${coords.map(c => {
+            const parts = String(c).split(',');
+            return `<circle cx="${parts[0] || 0}" cy="${parts[1] || 0}" r="3" fill="var(--color-card)" stroke="var(--saffron-primary)" stroke-width="2" />`;
+          }).join('')}
         </svg>
         <div class="sparkline-labels">
-          <small>${points[0].date || 'Earlier'}</small>
-          <small>${points[points.length - 1].date || 'Recent'}</small>
+          <span>${points[0]?.date || 'Earlier'}</span>
+          <span>${points[points.length - 1]?.date || 'Recent'}</span>
         </div>
       </div>
     `;
@@ -95,22 +101,22 @@ window.Charts = {
    * Horizontal bar breakdown of regional demand by Indian states.
    */
   buildRegionHeatBar(regions) {
-    if (!regions || regions.length === 0) return '';
+    if (!regions || !Array.isArray(regions) || regions.length === 0) return '';
 
     const topRegions = regions.slice(0, 5);
-    const maxVal = Math.max(...topRegions.map(r => r.max_value_index), 100);
+    const maxVal = Math.max(...topRegions.map(r => r.max_value_index || 0), 100);
 
     return `
       <div class="region-bars-container">
         ${topRegions.map(r => {
-          const pct = Math.min(100, Math.max(5, (r.max_value_index / maxVal) * 100));
+          const pct = Math.min(100, Math.max(6, ((r.max_value_index || 0) / maxVal) * 100));
           return `
             <div class="region-bar-row">
-              <span class="region-name">${r.location}</span>
+              <span class="region-name" title="${r.location}">${r.location}</span>
               <div class="region-track">
                 <div class="region-fill" style="width: ${pct}%;"></div>
               </div>
-              <span class="region-val">${r.max_value_index}</span>
+              <span class="region-val">${r.max_value_index || 0}</span>
             </div>
           `;
         }).join('')}

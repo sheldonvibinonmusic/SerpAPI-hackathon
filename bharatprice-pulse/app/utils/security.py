@@ -39,3 +39,32 @@ def validate_serpapi_response(data: Any) -> Dict[str, Any]:
         error_msg = data.get("error")
         raise ValueError(f"SerpApi returned error: {error_msg}")
     return data
+
+
+def safe_float(val: Any) -> Optional[float]:
+    """Safely convert a value or text with numbers to float, or return None."""
+    if val is None:
+        return None
+    try:
+        return float(val)
+    except (ValueError, TypeError):
+        try:
+            m = re.search(r"(\d+(?:\.\d+)?)", str(val))
+            return float(m.group(1)) if m else None
+        except Exception:
+            return None
+
+
+def safe_int(val: Any) -> Optional[int]:
+    """Safely convert a value or text with integers to int, or return None."""
+    if val is None:
+        return None
+    try:
+        return int(str(val).replace(",", "").strip())
+    except (ValueError, TypeError):
+        try:
+            m = re.search(r"(\d+)", str(val).replace(",", ""))
+            return int(m.group(1)) if m else None
+        except Exception:
+            return None
+

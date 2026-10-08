@@ -78,3 +78,34 @@ def test_history_endpoint():
     data = response.json()
     assert "items" in data
     assert isinstance(data["items"], list)
+
+
+def test_upload_image_invalid_content_type():
+    # Test text file upload rejected cleanly
+    response = client.post(
+        "/api/upload-image",
+        files={"file": ("test.txt", b"plain text", "text/plain")}
+    )
+    assert response.status_code == 400
+    assert "image" in response.json()["detail"].lower()
+
+
+def test_analyze_response_contains_rich_evidence_lists():
+    payload = {
+        "product_raw": "Samsung Galaxy M14 5G",
+        "city_raw": "Delhi",
+        "selling_price": 12499.0,
+        "landed_cost": 11500.0,
+        "analysis_mode": "standard",
+        "ui_language": "en"
+    }
+    response = client.post("/api/analyze", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert "local_merchants" in data
+    assert "news_articles" in data
+    assert "finance_signals" in data
+    assert "trends_evidence" in data
+    assert isinstance(data["local_merchants"], list)
+    assert isinstance(data["news_articles"], list)
+

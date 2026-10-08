@@ -15,6 +15,12 @@ def setup_logging(debug: bool = False) -> None:
     log_format = "%(asctime)s [%(levelname)s] [%(name)s] %(message)s"
     date_format = "%Y-%m-%d %H:%M:%S"
 
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
     logging.basicConfig(
         level=log_level,
         format=log_format,

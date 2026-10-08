@@ -33,7 +33,8 @@ def rank_merchants(
 
     for m in merchants:
         score = 0.3  # Base discovery score
-        combined_text = f"{m.title} {m.type or ''} {' '.join(m.types)} {m.description or ''}".lower()
+        types_str = ' '.join(str(t) for t in (m.types or []))
+        combined_text = f"{m.title} {m.type or ''} {types_str} {m.description or ''}".lower()
 
         # Check wholesale/distributor keywords
         is_wholesale = any(w in combined_text for w in WHOLESALE_KEYWORDS)

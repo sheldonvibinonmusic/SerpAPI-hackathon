@@ -16,6 +16,7 @@ from app.models.request_models import NormalizedQuery
 from app.processing.query_normalizer import build_cache_key
 from app.serpapi.client import get_serpapi_client
 from app.utils.datetime_utils import utc_now
+from app.utils.security import safe_float, safe_int
 
 logger = logging.getLogger(__name__)
 
@@ -54,12 +55,11 @@ async def search_amazon_in(
         now = utc_now()
 
         for idx, item in enumerate(organic_results[:8]):
-            price_val = None
             price_obj = item.get("price")
             if isinstance(price_obj, dict):
                 price_val = price_obj.get("value")
-            elif isinstance(price_obj, (int, float)):
-                price_val = float(price_obj)
+            else:
+                price_val = price_obj
 
             items.append(
                 ShoppingItem(
@@ -70,9 +70,9 @@ async def search_amazon_in(
                     source_name="Amazon India",
                     product_link=item.get("link"),
                     product_id=item.get("asin"),
-                    price_inr=float(price_val) if price_val else None,
-                    rating=float(item["rating"]) if item.get("rating") is not None else None,
-                    reviews=int(item["reviews"]) if item.get("reviews") is not None else None,
+                    price_inr=safe_float(price_val),
+                    rating=safe_float(item.get("rating")),
+                    reviews=safe_int(item.get("reviews")),
                 )
             )
         return items
