@@ -9,47 +9,34 @@ window.Charts = {
    * Horizontal visual bar showing where seller price sits relative to market distribution.
    */
   buildPriceRangeBar(min, q1, median, q3, max, sellerPrice) {
-    if (!min || !max || min >= max) return '';
-
-    const rangeSpan = (max - min) * 1.2 || 1;
-    const baseMin = Math.max(0, min - (max - min) * 0.1);
-    
-    const toPercent = val => Math.min(98, Math.max(2, ((val - baseMin) / rangeSpan) * 100));
-
-    const pQ1 = toPercent(q1 || min);
-    const pMed = toPercent(median);
-    const pQ3 = toPercent(q3 || max);
-    const pSeller = toPercent(sellerPrice);
-
+    const values = [min, q1, median, q3, max, sellerPrice].map(Number);
+    if (!Number.isFinite(values[0]) || !Number.isFinite(values[2]) || !Number.isFinite(values[4]) || values[4] < values[0]) return '';
+    const [lo, firstQ, med, thirdQ, hi, you] = values;
+    const span = Math.max(hi - lo, Math.abs(hi) * 0.04, 1);
+    const padding = span * 0.12;
+    const domainMin = Math.max(0, lo - padding);
+    const domainMax = hi + padding;
+    const pct = value => Math.min(100, Math.max(0, ((value - domainMin) / (domainMax - domainMin)) * 100));
+    const pMin = pct(lo), pQ1 = pct(Number.isFinite(firstQ) ? firstQ : lo);
+    const pMed = pct(med), pQ3 = pct(Number.isFinite(thirdQ) ? thirdQ : hi);
+    const pMax = pct(hi), pYou = pct(Number.isFinite(you) ? you : lo);
     return `
-      <div class="price-range-widget">
-        <div class="range-labels">
-          <span>Min: ₹${min.toFixed(0)}</span>
-          <span style="color: var(--color-text);">Median: ₹${median.toFixed(0)}</span>
-          <span>Max: ₹${max.toFixed(0)}</span>
-        </div>
-
-        <div class="range-track-container">
-          <!-- Full track -->
-          <div class="range-track"></div>
-          
-          <!-- Middle 50% IQR band -->
-          <div class="range-iqr-band" style="left: ${pQ1}%; width: ${Math.max(4, pQ3 - pQ1)}%;"></div>
-          
-          <!-- Median tick -->
-          <div class="range-median-marker" style="left: ${pMed}%;" title="Market Median: ₹${median.toFixed(2)}"></div>
-
-          <!-- Seller Price Indicator Pin -->
-          <div class="range-seller-pin" style="left: ${pSeller}%;" title="Your Price: ₹${sellerPrice.toFixed(2)}">
-            <span class="seller-pin-bubble">₹${sellerPrice.toFixed(0)} (You)</span>
-            <div class="seller-pin-line"></div>
+      <div class="price-range-widget" role="img" aria-label="Online prices range from ₹${lo.toFixed(0)} to ₹${hi.toFixed(0)}; median ₹${med.toFixed(0)}; your price ₹${Number.isFinite(you) ? you.toFixed(0) : 'not provided'}">
+        <div class="range-plot">
+          <div class="range-axis-labels" aria-hidden="true">
+            <span style="left:${pMin}%">Min<br>₹${lo.toFixed(0)}</span>
+            <span style="left:${pMed}%">Median<br>₹${med.toFixed(0)}</span>
+            <span style="left:${pMax}%">Max<br>₹${hi.toFixed(0)}</span>
+          </div>
+          <div class="range-track-container">
+            <div class="range-track"></div>
+            <div class="range-whisker" style="left:${pMin}%;width:${Math.max(0,pMax-pMin)}%"></div>
+            <div class="range-iqr-band" style="--band-start:${pQ1}%;--band-size:${Math.max(1,pQ3-pQ1)}%;left:${pQ1}%;width:${Math.max(1,pQ3-pQ1)}%"></div>
+            <div class="range-median-marker" style="left:${pMed}%"></div>
+            ${Number.isFinite(you) ? `<div class="range-seller-pin ${pYou < pMin ? 'pin-left' : pYou > pMax ? 'pin-right' : ''}" style="--you-position:${pYou}%;left:${pYou}%"><span class="seller-pin-bubble">You · ₹${you.toFixed(0)}</span><span class="seller-pin-line"></span></div>` : ''}
           </div>
         </div>
-
-        <div class="range-legend">
-          <span><span class="iqr-swatch"></span> Middle 50% Range</span>
-          <span><span class="seller-swatch"></span> Your Shelf Price</span>
-        </div>
+        <div class="range-legend"><span><i class="iqr-swatch"></i>Middle 50% of prices</span><span><i class="seller-swatch"></i>Your price</span></div>
       </div>
     `;
   },

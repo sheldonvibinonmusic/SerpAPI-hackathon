@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analysis History — BharatPrice Pulse</title>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('bpp_theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark')}catch(e){}</script>
   <link rel="stylesheet" href="/static/css/style.css">
   <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
   <script>
@@ -67,18 +68,21 @@
             <span class="auth-icon">🔑</span>
             <span id="auth-btn-label">Sign In</span>
           </button>
-          <div id="user-profile-badge" class="user-profile-badge hidden">
-            <img id="user-avatar-img" class="user-avatar-img" src="" alt="Avatar">
-            <div class="user-info-text">
-              <span id="user-display-name" class="user-name"></span>
-              <span id="user-display-email" class="user-email-text"></span>
+          <div id="user-profile-badge" class="user-profile-wrap hidden">
+            <button type="button" id="user-profile-trigger" class="user-profile-badge" aria-expanded="false" aria-controls="user-profile-menu">
+              <img id="user-avatar-img" class="user-avatar-img" src="" alt="">
+              <span class="user-info-text"><span id="user-display-name" class="user-name"></span><span id="user-display-email" class="user-email-text"></span></span>
+              <svg class="profile-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div id="user-profile-menu" class="profile-menu hidden" role="menu">
+              <a href="/history" role="menuitem">My History</a>
+              <button type="button" id="auth-logout-btn" role="menuitem">Sign out</button>
             </div>
-            <button type="button" id="auth-logout-btn" class="btn-logout" title="Sign Out">✕</button>
           </div>
         </div>
 
         <a href="/" class="btn btn-secondary">← Back to Price Check</a>
-        <button id="clear-history-btn" class="btn btn-outline-danger">Clear My History</button>
+        <button id="clear-history-btn" class="btn btn-outline-danger hidden">Clear My History</button>
       </div>
     </div>
   </header>
@@ -101,7 +105,7 @@
   </main>
 
   <!-- Login & Authentication Modal -->
-  <div id="login-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div id="login-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="login-modal-desc" aria-hidden="true" inert>
     <div class="modal-card">
       <button type="button" id="modal-close-btn" class="modal-close-btn" aria-label="Close modal" onclick="window.closeLoginModal()">✕</button>
       <div class="modal-header">
@@ -109,7 +113,7 @@
           <img src="/static/img/logo.svg" alt="BharatPrice Pulse" class="modal-logo-img">
         </div>
         <h3 id="modal-title" class="modal-title">Sign In to BharatPrice Pulse</h3>
-        <p class="modal-subtitle">Access your private pricing history across your devices.</p>
+        <p id="login-modal-desc" class="modal-subtitle">Access your private pricing history across your devices.</p>
       </div>
       <div class="modal-body">
         <!-- 1-Click Kirana Demo Login -->
@@ -133,16 +137,16 @@
         </div>
 
         <!-- Google / Gmail Form -->
-        <form id="login-form" class="modal-form">
+        <form id="login-form" class="modal-form" novalidate>
           <div class="form-group">
             <label for="login-email" class="form-label">Gmail / Email Address</label>
             <div class="input-glow-wrap">
               <span class="input-icon">✉️</span>
-              <input 
-                type="email" 
-                id="login-email" 
-                class="form-control" 
-                placeholder="seller.yourname@gmail.com" 
+              <input
+                type="email"
+                id="login-email"
+                class="form-control"
+                placeholder="seller.yourname@gmail.com"
                 required
               >
             </div>
@@ -151,19 +155,83 @@
             <label for="login-name" class="form-label">Shop / Owner Name (Optional)</label>
             <div class="input-glow-wrap">
               <span class="input-icon">👤</span>
-              <input 
-                type="text" 
-                id="login-name" 
-                class="form-control" 
+              <input
+                type="text"
+                id="login-name"
+                class="form-control"
                 placeholder="e.g. Ramesh Kumar (Jai Bharat Kirana)"
               >
             </div>
           </div>
+          <p id="login-error" class="field-error-msg hidden" role="alert"></p>
+          <p id="login-success" class="login-success hidden" role="status">Signed in. Your history is ready.</p>
           <button type="submit" id="login-submit-btn" class="btn btn-primary btn-block">
-            <span>Sign In to My Account</span>
-            <span class="btn-spinner hidden" id="login-spinner"></span>
+            <span class="login-submit-label">Sign In to My Account</span>
+            <span class="btn-spinner hidden" id="login-spinner" aria-hidden="true"></span>
           </button>
         </form>
+      </div>
+  </div>
+
+  <!-- Saved Analysis Full Report Inspection Modal (Zero SerpApi Credits) -->
+  <div id="history-report-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="hist-modal-title">
+    <div class="modal-card history-modal-card">
+      <button type="button" id="hist-modal-close-btn" class="modal-close-btn" aria-label="Close modal" onclick="closeHistoryReportModal()">✕</button>
+
+      <!-- Top Historical Banner Notice -->
+      <div class="history-snapshot-banner">
+        <div class="history-snapshot-badge">
+          <span>📜</span> Saved Market Snapshot
+        </div>
+        <div class="history-snapshot-note" id="hist-snapshot-note">
+          Stored record from your account • Zero SerpApi credits used to view
+        </div>
+      </div>
+
+      <!-- Modal Header -->
+      <div class="history-modal-header">
+        <div class="history-modal-title-group">
+          <h3 id="hist-modal-title">Saved Market Decision</h3>
+          <div class="history-modal-meta">
+            <span id="hist-meta-location">📍 Market: —</span>
+            <span id="hist-meta-date">📅 Analyzed: —</span>
+            <span id="hist-meta-credits">⚡ Credits Used: —</span>
+          </div>
+        </div>
+        <!-- Export Action Buttons -->
+        <div class="report-toolbar-actions">
+          <button type="button" id="hist-btn-whatsapp" class="btn btn-export btn-whatsapp" title="Copy clean summary for WhatsApp">
+            <span>💬</span> <span>WhatsApp</span>
+          </button>
+          <button type="button" id="hist-btn-pdf" class="btn btn-export btn-pdf" title="Download printable PDF report">
+            <span>📄</span> <span>Print / PDF</span>
+          </button>
+          <button type="button" id="hist-btn-png" class="btn btn-export btn-png" title="Download executive graphics card">
+            <span>🖼️</span> <span>PNG Card</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body Containing Decision & Evidence Cards -->
+      <div class="history-modal-body" id="hist-modal-body">
+        <div id="hist-loading-spinner" class="history-loading">
+          <div class="radar-spinner" style="margin: 0 auto 1rem;"></div>
+          Fetching saved report data...
+        </div>
+        <div id="hist-cards-wrapper" class="hidden" style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <div id="hist-card-action"></div>
+          <div class="results-grid">
+            <div id="hist-card-market"></div>
+            <div id="hist-card-local"></div>
+          </div>
+          <div class="results-grid">
+            <div id="hist-card-demand"></div>
+            <div id="hist-card-external"></div>
+          </div>
+          <div id="hist-card-economics"></div>
+          <div id="hist-card-gst"></div>
+          <div id="hist-card-sources"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -172,7 +240,7 @@
   <footer class="app-footer">
     <div class="footer-container">
       <div class="footer-grid">
-        
+
         <!-- Col 1: About BharatPrice Pulse -->
         <div class="footer-col footer-col-about">
           <div class="footer-brand">
@@ -252,6 +320,7 @@
     </div>
   </footer>
 
+  <script src="/static/js/components.js"></script>
   <script src="/static/js/app.js"></script>
   <script>
     // History Page Logic
@@ -269,10 +338,13 @@
       const subtitle = document.getElementById('history-subtitle');
       const user = getStoredUser();
 
+      const clearBtn = document.getElementById('clear-history-btn');
+      if (clearBtn) clearBtn.classList.toggle('hidden', !user?.email);
+
       if (!user || !user.email) {
         subtitle.textContent = "Sign in to see your personalized search history.";
         container.innerHTML = `
-          <div class="card empty-state reveal-on-scroll">
+          <div class="card empty-state">
             <div class="empty-icon">📂</div>
             <h3>Your Saved Market Checks</h3>
             <p>Sign in with your account to view your private pricing history and past market reports.</p>
@@ -290,10 +362,10 @@
         const url = `/api/history?user_email=${encodeURIComponent(user.email)}`;
         const resp = await fetch(url);
         const data = await resp.json();
-        
+
         if (!data.items || data.items.length === 0) {
           container.innerHTML = `
-            <div class="card empty-state reveal-on-scroll">
+            <div class="card empty-state">
               <div class="empty-icon">🗂️</div>
               <h3>No market checks saved yet for ${user.name}</h3>
               <p>Go to the price check screen and analyze your first product!</p>
@@ -323,21 +395,178 @@
               <span class="badge-confidence">Confidence: ${item.confidence || 'MEDIUM'}</span>
               <span class="history-credits">Used ${item.searches_consumed || 1} credits</span>
             </div>
+            <div class="history-card-actions">
+              <button type="button" class="btn-view-report" onclick="openHistoryReportModal('${item.analysis_id}')">
+                <span>👁️</span> View Saved Report
+              </button>
+              <a href="/?product=${encodeURIComponent(item.product)}&city=${encodeURIComponent(item.city)}&price=${item.selling_price}${item.product_description ? '&desc=' + encodeURIComponent(item.product_description) : ''}" class="btn-fresh-check">
+                <span>🔄</span> Check Live Market Now
+              </a>
+            </div>
           </div>
         `).join('');
+        window.BPP_OBSERVE_SCROLL?.();
 
       } catch (e) {
         container.innerHTML = `<div class="alert alert-danger">Failed to load history: ${e.message}</div>`;
       }
     }
 
+    async function openHistoryReportModal(analysisId) {
+      const modal = document.getElementById('history-report-modal');
+      const spinner = document.getElementById('hist-loading-spinner');
+      const cardsWrapper = document.getElementById('hist-cards-wrapper');
+      if (!modal) return;
+
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+      if (spinner) spinner.classList.remove('hidden');
+      if (cardsWrapper) cardsWrapper.classList.add('hidden');
+
+      try {
+        const resp = await fetch(`/api/analyze/${analysisId}`);
+        if (!resp.ok) throw new Error('Analysis record not found');
+        const data = await resp.json();
+
+        const sellerPrice = data.market_metrics?.seller_price || data.selling_price || 0;
+        const costPrice = data.landed_cost || null;
+
+        // Store globally so WhatsApp, PDF, and PNG export functions work seamlessly!
+        window.CURRENT_ANALYSIS = { data, sellerPrice, costPrice };
+
+        // Wire Export Buttons inside modal
+        const btnWhatsapp = document.getElementById('hist-btn-whatsapp');
+        if (btnWhatsapp) btnWhatsapp.onclick = () => exportToWhatsApp();
+        const btnPdf = document.getElementById('hist-btn-pdf');
+        if (btnPdf) btnPdf.onclick = () => exportToPDF();
+        const btnPng = document.getElementById('hist-btn-png');
+        if (btnPng) btnPng.onclick = () => exportToPNG();
+
+        // Update Header Info
+        const titleEl = document.getElementById('hist-modal-title');
+        if (titleEl) titleEl.textContent = data.product_name || data.search_query_used || 'Saved Market Decision';
+
+        const locEl = document.getElementById('hist-meta-location');
+        if (locEl) locEl.textContent = `📍 Market: ${data.location_display || 'Local Market'}`;
+
+        const dateEl = document.getElementById('hist-meta-date');
+        if (dateEl) {
+          const d = data.timestamp ? new Date(data.timestamp) : new Date();
+          dateEl.textContent = `📅 Analyzed: ${d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+        }
+
+        const credEl = document.getElementById('hist-meta-credits');
+        if (credEl) credEl.textContent = `⚡ Credits Used: ${data.searches_consumed || 1} (Cached on device)`;
+
+        // Render Cards with Components library
+        if (window.Components) {
+          const actionCard = document.getElementById('hist-card-action');
+          if (actionCard) {
+            actionCard.innerHTML = Components.renderActionCard(
+              data.action,
+              data.action_label,
+              data.explanation,
+              data.fusion,
+              data.search_query_used
+            );
+          }
+
+          const marketCard = document.getElementById('hist-card-market');
+          if (marketCard) {
+            marketCard.innerHTML = Components.renderMarketCard(data.market_metrics, sellerPrice);
+          }
+
+          const localCard = document.getElementById('hist-card-local');
+          if (localCard) {
+            const merchants = (Array.isArray(data.local_merchants) && data.local_merchants.length > 0)
+              ? data.local_merchants
+              : ((Array.isArray(data.sources)) ? data.sources.filter(s => s.source_type === 'Local Discovery') : []);
+            localCard.innerHTML = Components.renderLocalCard(merchants, data.location_display || 'Your Area');
+          }
+
+          const demandCard = document.getElementById('hist-card-demand');
+          if (demandCard) {
+            demandCard.innerHTML = Components.renderDemandCard(data.trends_evidence || null);
+          }
+
+          const extCard = document.getElementById('hist-card-external');
+          if (extCard) {
+            const newsList = (Array.isArray(data.news_articles) && data.news_articles.length > 0)
+              ? data.news_articles
+              : ((Array.isArray(data.sources)) ? data.sources.filter(s => s.source_type === 'News Event') : []);
+            const finList = (Array.isArray(data.finance_signals) && data.finance_signals.length > 0)
+              ? data.finance_signals
+              : [];
+            extCard.innerHTML = Components.renderExternalCard(newsList, finList);
+          }
+
+          const econCard = document.getElementById('hist-card-economics');
+          if (econCard) {
+            if (costPrice && data.market_metrics) {
+              econCard.innerHTML = Components.renderEconomicsCard(data.market_metrics, costPrice);
+              econCard.classList.remove('hidden');
+            } else {
+              econCard.classList.add('hidden');
+            }
+          }
+
+          const gstCard = document.getElementById('hist-card-gst');
+          if (gstCard) {
+            if (data.gst_reference_display) {
+              gstCard.innerHTML = Components.renderGSTCard(data.gst_reference_display);
+              gstCard.classList.remove('hidden');
+            } else {
+              gstCard.classList.add('hidden');
+            }
+          }
+
+          const srcCard = document.getElementById('hist-card-sources');
+          if (srcCard) {
+            srcCard.innerHTML = Components.renderSourcesCard(
+              data.sources || [],
+              data.searches_consumed,
+              data.searches_from_cache
+            );
+          }
+        }
+
+        if (spinner) spinner.classList.add('hidden');
+        if (cardsWrapper) cardsWrapper.classList.remove('hidden');
+
+      } catch (err) {
+        if (spinner) spinner.classList.add('hidden');
+        alert('Could not open saved report: ' + err.message);
+        closeHistoryReportModal();
+      }
+    }
+
+    function closeHistoryReportModal() {
+      const modal = document.getElementById('history-report-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    }
+
+    // Close on backdrop click & ESC key
+    const histModal = document.getElementById('history-report-modal');
+    if (histModal) {
+      histModal.onclick = (e) => {
+        if (e.target === histModal) closeHistoryReportModal();
+      };
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeHistoryReportModal();
+    });
+
     document.getElementById('clear-history-btn').addEventListener('click', async () => {
       const user = getStoredUser();
-      const confirmMsg = user 
-        ? `Are you sure you want to clear history for ${user.email}?` 
+      if (!user?.email) return;
+      const confirmMsg = user
+        ? `Are you sure you want to clear history for ${user.email}?`
         : 'Are you sure you want to delete your saved analyses?';
       if (confirm(confirmMsg)) {
-        const url = user ? `/api/history?user_email=${encodeURIComponent(user.email)}` : '/api/history';
+        const url = `/api/history?user_email=${encodeURIComponent(user.email)}`;
         await fetch(url, { method: 'DELETE' });
         loadHistory();
       }

@@ -7,7 +7,8 @@
   },
   "hero": {
     "title": "உங்கள் சந்தையை அறிந்து கொள்ளுங்கள்,",
-    "title_accent": "நம்பிக்கையுடன் விலை நிர்ணயம் செய்யுங்கள்"
+    "title_accent": "நம்பிக்கையுடன் விலை நிர்ணயம் செய்யுங்கள்",
+    "subtitle": "Compare your price with online markets and nearby sellers in seconds. Designed for Indian shopkeepers."
   },
   "form": {
     "title": "விலையை சரிபார்க்கவும்",
@@ -24,6 +25,226 @@
     "mode_quick_name": "விரைவு சோதனை",
     "mode_standard_name": "வழக்கமான சோதனை",
     "mode_deep_name": "ஆழமான ஆய்வு",
-    "submit_btn": "சந்தையை சரிபார்க்கவும்"
+    "submit_btn": "சந்தையை சரிபார்க்கவும்",
+    "product_hint": "Be specific — include brand, size or model if you know it",
+    "product_required": "Please enter the product name",
+    "city_hint": "Your city helps us find local market prices",
+    "city_required": "Please enter your city",
+    "sell_price_placeholder": "0.00",
+    "sell_price_hint": "The price you currently charge your customers",
+    "sell_price_required": "Please enter your selling price",
+    "sell_price_invalid": "Please enter a valid price",
+    "cost_price_placeholder": "0.00 (optional)",
+    "cost_price_hint": "What you paid for it — we'll calculate your margin",
+    "mode_quick_desc": "Checks online prices only. Fast results in under 10 seconds.",
+    "mode_quick_time": "~5 sec",
+    "mode_standard_desc": "Online prices + local sourcing + demand trends. Best for most decisions.",
+    "mode_standard_time": "~20 sec",
+    "mode_deep_desc": "Everything in Standard + latest news + finance signals + photo recognition.",
+    "mode_deep_time": "~45 sec",
+    "photo_label": "Product photo",
+    "photo_upload_text": "Tap to upload a photo of your product",
+    "photo_upload_subtext": "JPG, PNG up to 5MB",
+    "photo_upload_hint": "Only used for Deep Check",
+    "photo_clear": "Remove photo",
+    "submitting": "Checking..."
+  },
+  "quota": {
+    "label": "API Credits",
+    "good": "credits left",
+    "warning": "credits left — running low",
+    "critical": "credits left — almost empty",
+    "unknown": "Checking..."
+  },
+  "progress": {
+    "title": "Checking the market for you…",
+    "step1": "Checking online prices on major shopping sites",
+    "step2": "Finding nearby suppliers and local sellers",
+    "step3": "Checking recent news that affects your product",
+    "step4": "Looking at demand and trend signals",
+    "step5": "Preparing your personalised recommendation"
+  },
+  "results": {
+    "title": "Your Market Report",
+    "generated": "Generated",
+    "product": "Product",
+    "city": "City",
+    "new_analysis": "Run New Check",
+    "print": "Print Report",
+    "share": "Share"
+  },
+  "action": {
+    "title": "What Should You Do?",
+    "confidence_label": "Confidence",
+    "your_price": "Your Price",
+    "HOLD": {
+      "title": "Hold Your Price",
+      "badge": "HOLD",
+      "icon": "✋",
+      "description": "Your price is in line with the market. No change needed right now."
+    },
+    "REVIEW": {
+      "title": "Review Your Pricing",
+      "badge": "REVIEW",
+      "icon": "🔍",
+      "description": "Market conditions are mixed. Take a closer look before deciding."
+    },
+    "REPRICE_UP": {
+      "title": "You Can Charge More",
+      "badge": "RAISE PRICE",
+      "icon": "📈",
+      "description": "Your price is lower than what most people are paying online. You have room to earn more."
+    },
+    "REPRICE_DOWN": {
+      "title": "Lower Your Price",
+      "badge": "LOWER PRICE",
+      "icon": "📉",
+      "description": "Your price is higher than most online prices. Customers may go elsewhere."
+    },
+    "SOURCE_LOCALLY": {
+      "title": "Source Locally Instead",
+      "badge": "SOURCE LOCAL",
+      "icon": "🏪",
+      "description": "We found nearby suppliers offering better prices. Buying locally could improve your margin."
+    },
+    "WATCH": {
+      "title": "Watch the Market",
+      "badge": "WATCH",
+      "icon": "👀",
+      "description": "Prices are changing. Keep an eye on the market before making any decision."
+    },
+    "INSUFFICIENT": {
+      "title": "Not Enough Data",
+      "badge": "NEED MORE DATA",
+      "icon": "❓",
+      "description": "We couldn't find enough price data for this product. Try a more specific product name."
+    }
+  },
+  "market": {
+    "title": "Online Market Prices",
+    "icon": "🛒",
+    "your_price": "Your Price",
+    "lowest_online": "Lowest Online",
+    "highest_online": "Highest Online",
+    "median_online": "Typical Online Price",
+    "platform": "Platform",
+    "price": "Price",
+    "link": "View",
+    "no_data": "No online price data found for this product.",
+    "range_title": "Where does your price sit?",
+    "position": {
+      "below": "Your price is below the market",
+      "at": "Your price is at market level",
+      "above": "Your price is above the market"
+    }
+  },
+  "demand": {
+    "title": "Demand Signals",
+    "icon": "📊",
+    "trend_label": "Search Interest",
+    "region_title": "Interest by Region",
+    "rising": "Rising demand",
+    "falling": "Falling demand",
+    "stable": "Stable demand",
+    "no_data": "No demand data available for this product."
+  },
+  "local": {
+    "title": "Nearby Sourcing Options",
+    "icon": "🏪",
+    "merchant": "Supplier",
+    "location": "Location",
+    "price": "Price",
+    "savings": "Savings",
+    "distance": "Distance",
+    "visit": "Contact",
+    "no_data": "No local sourcing data found for your city.",
+    "note": "Contact suppliers to verify current prices and availability."
+  },
+  "external": {
+    "title": "Market News & Signals",
+    "icon": "📰",
+    "news_title": "Recent News",
+    "finance_title": "Financial Signals",
+    "impact_positive": "Good for business",
+    "impact_negative": "May affect prices",
+    "impact_neutral": "Watch & see",
+    "no_news": "No recent news found.",
+    "no_finance": "No finance data available."
+  },
+  "economics": {
+    "title": "Your Seller Economics",
+    "icon": "💰",
+    "buy_price": "Your Buy Price",
+    "sell_price": "Your Sell Price",
+    "margin_amount": "Margin (₹)",
+    "margin_percent": "Margin (%)",
+    "suggested_sell": "Suggested Price",
+    "suggested_margin": "Suggested Margin (%)",
+    "no_cost": "Enter your purchase price in the form to see your margin."
+  },
+  "sources": {
+    "title": "Why This Recommendation?",
+    "icon": "🔗",
+    "evidence_title": "Evidence We Used",
+    "no_sources": "No sources available.",
+    "view_source": "View source",
+    "serpapi_note": "Price data powered by SerpApi — real-time search engine results."
+  },
+  "gst": {
+    "label": "GST Reference",
+    "note": "GST rates shown are for reference only. Verify with your CA or the official GST portal for your specific product.",
+    "source_prefix": "Source:"
+  },
+  "disclaimer": {
+    "title": "⚠ Important — Please Read",
+    "items": [
+      "Prices shown are from public online listings and may not reflect current in-store prices.",
+      "Stock availability is NOT verified — always confirm with the supplier before purchasing.",
+      "This is a pricing guide only — not financial or business advice.",
+      "Online prices may differ from local market prices in your city.",
+      "Prices change frequently — always verify before making large orders."
+    ]
+  },
+  "budget": {
+    "label": "SerpApi searches used",
+    "cached": "Cached result — no credits used",
+    "of": "of"
+  },
+  "confidence": {
+    "HIGH": "High confidence",
+    "MEDIUM": "Medium confidence",
+    "LOW": "Low confidence"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "network": "Could not connect to the server. Please check your internet connection.",
+    "timeout": "The check took too long. Please try again.",
+    "server": "The server had a problem. Please try again in a moment.",
+    "invalid_response": "We got an unexpected response. Please try again.",
+    "retry": "Try Again",
+    "quota_exhausted": "All API credits have been used. Please check back later."
+  },
+  "history": {
+    "title": "Past Analyses",
+    "new_btn": "New Analysis",
+    "empty_title": "No past analyses yet",
+    "empty_desc": "Your previous market checks will appear here. Run your first check to get started!",
+    "filter_all": "All",
+    "filter_today": "Today",
+    "filter_week": "This Week",
+    "loading": "Loading your history...",
+    "error": "Could not load history. Please try again.",
+    "date": "Date",
+    "city": "City",
+    "action": "Recommendation",
+    "confidence": "Confidence",
+    "expand": "Show full report",
+    "collapse": "Hide report",
+    "mode": "Analysis mode"
+  },
+  "footer": {
+    "serpapi_label": "Evidence from SerpApi",
+    "disclaimer": "BharatPrice Pulse provides market intelligence for small retailers. Data is sourced from public internet listings and is for reference only. Not investment or financial advice. Prices may vary and are not guaranteed.",
+    "built_for": "Built for Indian shopkeepers"
   }
 }

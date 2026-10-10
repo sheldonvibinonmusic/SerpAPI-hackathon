@@ -72,28 +72,28 @@ class I18nManager {
         break;
       }
     }
-    return fbVal !== null && fbVal !== undefined ? fbVal : (defaultVal || keyPath);
+    return fbVal !== null && fbVal !== undefined ? fbVal : (defaultVal || '');
   }
 
   applyTranslations() {
     // 1. Text content
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
-      const text = this.t(key);
+      const text = this.t(key, el.textContent || '');
       if (text) el.textContent = text;
     });
 
     // 2. Placeholders
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
       const key = el.getAttribute('data-i18n-placeholder');
-      const text = this.t(key);
+      const text = this.t(key, el.getAttribute('placeholder') || '');
       if (text) el.setAttribute('placeholder', text);
     });
 
     // 3. Titles / tooltips
     document.querySelectorAll('[data-i18n-title]').forEach(el => {
       const key = el.getAttribute('data-i18n-title');
-      const text = this.t(key);
+      const text = this.t(key, el.getAttribute('title') || '');
       if (text) el.setAttribute('title', text);
     });
 

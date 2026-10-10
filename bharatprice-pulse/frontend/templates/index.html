@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BharatPrice Pulse — Real-Time Market Copilot</title>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('bpp_theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark')}catch(e){}</script>
   <link rel="stylesheet" href="/static/css/style.css">
   <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
   <script>
@@ -93,13 +94,16 @@
             <span class="auth-icon">🔑</span>
             <span id="auth-btn-label">Sign In</span>
           </button>
-          <div id="user-profile-badge" class="user-profile-badge hidden">
-            <img id="user-avatar-img" class="user-avatar-img" src="" alt="Avatar">
-            <div class="user-info-text">
-              <span id="user-display-name" class="user-name"></span>
-              <span id="user-display-email" class="user-email-text"></span>
+          <div id="user-profile-badge" class="user-profile-wrap hidden">
+            <button type="button" id="user-profile-trigger" class="user-profile-badge" aria-expanded="false" aria-controls="user-profile-menu">
+              <img id="user-avatar-img" class="user-avatar-img" src="" alt="">
+              <span class="user-info-text"><span id="user-display-name" class="user-name"></span><span id="user-display-email" class="user-email-text"></span></span>
+              <svg class="profile-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div id="user-profile-menu" class="profile-menu hidden" role="menu">
+              <a href="/history" role="menuitem">My History</a>
+              <button type="button" id="auth-logout-btn" role="menuitem">Sign out</button>
             </div>
-            <button type="button" id="auth-logout-btn" class="btn-logout" title="Sign Out" onclick="window.BPP_AUTH ? window.BPP_AUTH.logout() : null">✕</button>
           </div>
         </div>
 
@@ -113,7 +117,7 @@
 
   <!-- Main Container -->
   <main class="main-content">
-    
+
     <!-- Hero / Headline with Cyber-Grid Overlay & Visual Depth -->
     <section class="hero-section">
       <div class="hero-top-badges">
@@ -123,7 +127,7 @@
         </div>
         <div class="hero-feature-chip">
           <span class="chip-pulse"></span>
-          <span>Zero Hallucinations • 100% Deterministic</span>
+          <span>Live Web Evidence • Objective Price Analysis</span>
         </div>
       </div>
 
@@ -132,7 +136,7 @@
         <span class="hero-accent" data-i18n="hero.title_accent">Price with Confidence</span>
       </h2>
       <p class="hero-subtitle" data-i18n="hero.subtitle">
-        Compare your shelf price with observed online medians and local wholesale mandis in seconds. Specially engineered for Indian Kirana & Retail MSMEs.
+        Compare online listings and local market evidence to make better pricing decisions. Specially engineered for Indian Kirana & Retail MSMEs.
       </p>
 
       <!-- Platform Capability Strip -->
@@ -145,21 +149,21 @@
 
       <!-- Quick Test Commerce Chips -->
       <div class="quick-samples">
-        <span class="quick-samples-label">Quick Test:</span>
-        <button type="button" class="sample-chip" data-product="Fortune Mustard Oil 1L" data-city="Jaipur" data-price="145" data-cost="125">
+        <span class="quick-samples-label">Quick Examples:</span>
+        <button type="button" class="sample-chip" data-product="Fortune Mustard Oil 1L" data-city="Jaipur" data-price="145" data-cost="125" title="Sample FMCG commodity in Jaipur">
           <span class="chip-icon">🛢️</span> Fortune Mustard Oil 1L <span class="chip-price">₹145</span>
         </button>
-        <button type="button" class="sample-chip" data-product="Basmati Rice 5kg" data-city="Pune" data-price="420" data-cost="360">
+        <button type="button" class="sample-chip" data-product="Basmati Rice 5kg" data-city="Pune" data-price="420" data-cost="360" title="Sample staple grain in Pune">
           <span class="chip-icon">🍚</span> Basmati Rice 5kg <span class="chip-price">₹420</span>
         </button>
-        <button type="button" class="sample-chip" data-product="Samsung Galaxy M14 5G" data-city="Delhi" data-price="12499" data-cost="11500">
+        <button type="button" class="sample-chip" data-product="Samsung Galaxy M14 5G" data-city="Delhi" data-price="12499" data-cost="11500" title="Sample consumer electronics in Delhi">
           <span class="chip-icon">📱</span> Samsung Galaxy M14 5G <span class="chip-price">₹12,499</span>
         </button>
       </div>
     </section>
 
     <!-- Main Seller Form Card with Perspective Frame -->
-    <section class="card form-card">
+    <section class="card form-card" id="search-card">
       <div class="card-top-beam" aria-hidden="true"></div>
       <div class="card-glow-border" aria-hidden="true"></div>
       <div class="form-header-row">
@@ -175,138 +179,193 @@
       </div>
 
       <form id="analysis-form" class="seller-form" novalidate>
-        
-        <div class="form-grid">
-          <!-- Product Input -->
-          <div class="form-group span-2">
-            <label for="product_raw" class="form-label" data-i18n="form.product_label">What are you selling?</label>
-            <div class="input-glow-wrap">
-              <span class="input-icon">📦</span>
-              <input 
-                type="text" 
-                id="product_raw" 
-                name="product_raw" 
-                class="form-control" 
-                data-i18n-placeholder="form.product_placeholder" 
-                placeholder="e.g. Fortune Mustard Oil 1L, Samsung Galaxy M14 5G, Basmati Rice 5kg" 
-                required
-              >
-            </div>
-            <small class="form-hint" data-i18n="form.product_hint">Be specific — include brand, size or model if you know it</small>
-          </div>
 
-          <!-- Product Description Input (Context Engine) -->
-          <div class="form-group span-2">
-            <div class="label-row">
-              <label for="description_raw" class="form-label" data-i18n="form.desc_label">Product Description & Details</label>
-              <span class="badge-optional">Optional (Recommended)</span>
+        <!-- Section 1: Product & SKU Details -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <span class="form-section-badge">1</span>
+            <div>
+              <h4 class="form-section-title">Product Details & Context</h4>
+              <p class="form-section-sub">Specify the exact item you retail</p>
             </div>
-            <div class="input-glow-wrap">
-              <span class="input-icon">📝</span>
-              <input 
-                type="text" 
-                id="description_raw" 
-                name="description_raw" 
-                class="form-control" 
-                data-i18n-placeholder="form.desc_placeholder"
-                placeholder="e.g. 1121 steam aged basmati rice, 5kg pack, or 6GB RAM / 128GB ROM 5G"
-              >
-            </div>
-            <small class="form-hint" data-i18n="form.desc_hint">Add brand, grade, pack size, or variety for more accurate search results (e.g. 1121 steam aged, 5kg)</small>
           </div>
-
-          <!-- City / Location Input -->
-          <div class="form-group">
-            <label for="city_raw" class="form-label" data-i18n="form.city_label">Where do you sell?</label>
-            <div class="input-glow-wrap">
-              <span class="input-icon">📍</span>
-              <input 
-                type="text" 
-                id="city_raw" 
-                name="city_raw" 
-                class="form-control" 
-                data-i18n-placeholder="form.city_placeholder" 
-                placeholder="e.g. Jaipur, Pune, Delhi, Kolkata" 
-                required
-              >
+          <div class="form-grid">
+            <!-- Product Input -->
+            <div class="form-group span-2">
+              <div class="label-row">
+                <label for="product_raw" class="form-label" data-i18n="form.product_label">
+                  What are you selling? <span class="req-star" aria-hidden="true">*</span>
+                </label>
+                <span class="badge-required-pill">Required</span>
+              </div>
+              <div class="input-glow-wrap">
+                <span class="input-icon">📦</span>
+                <input
+                  type="text"
+                  id="product_raw"
+                  name="product_raw"
+                  class="form-control"
+                  data-i18n-placeholder="form.product_placeholder"
+                  placeholder="e.g. Fortune Mustard Oil 1L, Samsung Galaxy M14 5G, Basmati Rice 5kg"
+                  required
+                >
+              </div>
+              <div id="err-product" class="field-error-msg hidden" role="alert">
+                <span>⚠️</span> <span id="err-product-text">Please enter a product name with at least 2 characters.</span>
+              </div>
+              <small class="form-hint" data-i18n="form.product_hint">Be specific — include brand, size or model if you know it</small>
             </div>
-            <small class="form-hint" data-i18n="form.city_hint">Your city helps us find local market prices</small>
-          </div>
 
-          <!-- Selling Price Input -->
-          <div class="form-group">
-            <label for="selling_price" class="form-label" data-i18n="form.sell_price_label">Your selling price (₹)</label>
-            <div class="input-glow-wrap price-wrap">
-              <span class="input-prefix">₹</span>
-              <input 
-                type="number" 
-                id="selling_price" 
-                name="selling_price" 
-                step="0.01" 
-                min="0.01" 
-                class="form-control has-prefix" 
-                placeholder="175.00" 
-                required
-              >
+            <!-- Product Description Input (Context Engine) -->
+            <div class="form-group span-2">
+              <div class="label-row">
+                <label for="description_raw" class="form-label" data-i18n="form.desc_label">Product Description & Context</label>
+                <span class="badge-optional">Optional (Recommended)</span>
+              </div>
+              <div class="input-glow-wrap">
+                <span class="input-icon">📝</span>
+                <input
+                  type="text"
+                  id="description_raw"
+                  name="description_raw"
+                  class="form-control"
+                  data-i18n-placeholder="form.desc_placeholder"
+                  placeholder="e.g. 1121 steam aged basmati rice, 5kg pack, or 6GB RAM / 128GB ROM 5G"
+                >
+              </div>
+              <small class="form-hint" data-i18n="form.desc_hint">Add brand, grade, pack size, or variety for more accurate search results (e.g. 1121 steam aged, 5kg)</small>
             </div>
-            <small class="form-hint" data-i18n="form.sell_price_hint">The price you currently charge your customers</small>
           </div>
+        </div>
 
-          <!-- Cost Price Input (Optional) -->
-          <div class="form-group span-2">
-            <label for="landed_cost" class="form-label" data-i18n="form.cost_price_label">Your purchase price (₹)</label>
-            <div class="input-glow-wrap price-wrap">
-              <span class="input-prefix">₹</span>
-              <input 
-                type="number" 
-                id="landed_cost" 
-                name="landed_cost" 
-                step="0.01" 
-                min="0.01" 
-                class="form-control has-prefix" 
-                placeholder="142.00 (optional)"
-              >
+        <!-- Section 2: Market Location & Price Economics -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <span class="form-section-badge">2</span>
+            <div>
+              <h4 class="form-section-title">Market Location & Price Economics</h4>
+              <p class="form-section-sub">Where you sell and your current shelf pricing</p>
             </div>
-            <small class="form-hint" data-i18n="form.cost_price_hint">What you paid for it — we'll calculate your margin</small>
           </div>
+          <div class="form-grid">
+            <!-- City / Location Input -->
+            <div class="form-group">
+              <div class="label-row">
+                <label for="city_raw" class="form-label" data-i18n="form.city_label">
+                  Where do you sell? <span class="req-star" aria-hidden="true">*</span>
+                </label>
+                <span class="badge-required-pill">Required</span>
+              </div>
+              <div class="input-glow-wrap">
+                <span class="input-icon">📍</span>
+                <input
+                  type="text"
+                  id="city_raw"
+                  name="city_raw"
+                  class="form-control"
+                  data-i18n-placeholder="form.city_placeholder"
+                  placeholder="e.g. Jaipur, Pune, Delhi, Kolkata"
+                  required
+                >
+              </div>
+              <div id="err-city" class="field-error-msg hidden" role="alert">
+                <span>⚠️</span> <span id="err-city-text">Please enter your city or market location.</span>
+              </div>
+              <small class="form-hint" data-i18n="form.city_hint">Your city helps us find local market mandis</small>
+            </div>
 
-          <!-- Analysis Mode Selection -->
-          <div class="form-group span-2">
-            <label class="form-label" data-i18n="form.mode_label">How deep should we check?</label>
-            <div class="mode-selector">
-              <label class="mode-option">
-                <input type="radio" name="analysis_mode" value="quick">
-                <div class="mode-box">
-                  <div class="mode-box-header">
-                    <span class="mode-badge badge-quick">⚡ FAST</span>
-                    <span class="mode-title" data-i18n="form.mode_quick_name">Quick Check</span>
-                  </div>
-                  <span class="mode-desc" data-i18n="form.mode_quick_desc">Checks online prices only. Fast results in under 10 seconds.</span>
+            <!-- Selling Price Input -->
+            <div class="form-group">
+              <div class="label-row">
+                <label for="selling_price" class="form-label" data-i18n="form.sell_price_label">
+                  Your selling price (₹) <span class="req-star" aria-hidden="true">*</span>
+                </label>
+                <span class="badge-required-pill">Required</span>
+              </div>
+              <div class="input-glow-wrap price-wrap">
+                <span class="input-prefix">₹</span>
+                <input
+                  type="number"
+                  id="selling_price"
+                  name="selling_price"
+                  step="0.01"
+                  min="0.01"
+                  class="form-control has-prefix"
+                  placeholder="e.g. 180"
+                  required
+                >
+              </div>
+              <div id="err-price" class="field-error-msg hidden" role="alert">
+                <span>⚠️</span> <span id="err-price-text">Please enter a valid selling price greater than 0.</span>
+              </div>
+              <small class="form-hint" data-i18n="form.sell_price_hint">The price you currently charge your customers</small>
+            </div>
+
+            <!-- Cost Price Input (Optional) -->
+            <div class="form-group span-2">
+              <div class="label-row">
+                <label for="landed_cost" class="form-label" data-i18n="form.cost_price_label">Your purchase cost (₹)</label>
+                <span class="badge-optional">Optional</span>
+              </div>
+              <div class="input-glow-wrap price-wrap">
+                <span class="input-prefix">₹</span>
+                <input
+                  type="number"
+                  id="landed_cost"
+                  name="landed_cost"
+                  step="0.01"
+                  min="0.01"
+                  class="form-control has-prefix"
+                  placeholder="e.g. 145 (optional)"
+                >
+              </div>
+              <small class="form-hint" data-i18n="form.cost_price_hint">What you paid for it — enables gross profit margin analysis</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Analysis Depth -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <span class="form-section-badge">3</span>
+            <div>
+              <h4 class="form-section-title" data-i18n="form.mode_label">Analysis Depth</h4>
+              <p class="form-section-sub">Select intelligence engines and search budget</p>
+            </div>
+          </div>
+          <div class="mode-selector">
+            <label class="mode-option">
+              <input type="radio" name="analysis_mode" value="quick">
+              <div class="mode-box">
+                <div class="mode-box-header">
+                  <span class="mode-badge badge-quick">⚡ FAST (~5s)</span>
+                  <span class="mode-title" data-i18n="form.mode_quick_name">Quick Check</span>
                 </div>
-              </label>
+                <span class="mode-desc" data-i18n="form.mode_quick_desc">Checks online prices only. Fast results in under 10 seconds.</span>
+              </div>
+            </label>
 
-              <label class="mode-option">
-                <input type="radio" name="analysis_mode" value="standard" checked>
-                <div class="mode-box">
-                  <div class="mode-box-header">
-                    <span class="mode-badge badge-standard">⭐ RECOMMENDED</span>
-                    <span class="mode-title" data-i18n="form.mode_standard_name">Standard Check</span>
-                  </div>
-                  <span class="mode-desc" data-i18n="form.mode_standard_desc">Online prices + local sourcing + demand trends. Best for most decisions.</span>
+            <label class="mode-option">
+              <input type="radio" name="analysis_mode" value="standard" checked>
+              <div class="mode-box">
+                <div class="mode-box-header">
+                  <span class="mode-badge badge-standard">⭐ RECOMMENDED (~15s)</span>
+                  <span class="mode-title" data-i18n="form.mode_standard_name">Standard Check</span>
                 </div>
-              </label>
+                <span class="mode-desc" data-i18n="form.mode_standard_desc">Online prices + local sourcing + demand trends. Best for most decisions.</span>
+              </div>
+            </label>
 
-              <label class="mode-option">
-                <input type="radio" name="analysis_mode" value="deep">
-                <div class="mode-box">
-                  <div class="mode-box-header">
-                    <span class="mode-badge badge-deep">🔬 DEEP</span>
-                    <span class="mode-title" data-i18n="form.mode_deep_name">Deep Check</span>
-                  </div>
-                  <span class="mode-desc" data-i18n="form.mode_deep_desc">Everything in Standard + latest news + finance signals + photo scan.</span>
+            <label class="mode-option">
+              <input type="radio" name="analysis_mode" value="deep">
+              <div class="mode-box">
+                <div class="mode-box-header">
+                  <span class="mode-badge badge-deep">🔬 DEEP (~30s)</span>
+                  <span class="mode-title" data-i18n="form.mode_deep_name">Deep Check</span>
                 </div>
-              </label>
-            </div>
+                <span class="mode-desc" data-i18n="form.mode_deep_desc">Everything in Standard + latest news + finance signals + macro analysis.</span>
+              </div>
+            </label>
           </div>
         </div>
 
@@ -317,13 +376,16 @@
             <span class="btn-spinner hidden"></span>
             <span class="btn-arrow">→</span>
           </button>
+          <div class="form-submit-tip">
+            <span>💡 Tip: Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to analyze</span>
+          </div>
         </div>
 
       </form>
     </section>
 
     <!-- Progress Status Box (Hidden by default) -->
-    <section id="progress-section" class="card progress-card hidden">
+    <section id="progress-section" class="card progress-card hidden" aria-live="polite" aria-busy="true">
       <div class="progress-header">
         <div class="radar-spinner"></div>
         <div>
@@ -335,11 +397,12 @@
         <div id="progress-bar" class="progress-bar-fill"></div>
       </div>
       <div class="progress-steps-list">
-        <div class="step-chip active" id="step-1">1. Shopping Sites</div>
-        <div class="step-chip" id="step-2">2. Local Sourcing</div>
-        <div class="step-chip" id="step-3">3. Category Events</div>
-        <div class="step-chip" id="step-4">4. Trend Synthesis</div>
+        <div class="step-chip active" id="step-1"><span class="step-mark">1</span><span>Shopping Sites</span></div>
+        <div class="step-chip" id="step-2"><span class="step-mark">2</span><span>Local Sourcing</span></div>
+        <div class="step-chip" id="step-3"><span class="step-mark">3</span><span>Category Events</span></div>
+        <div class="step-chip" id="step-4"><span class="step-mark">4</span><span>Trend Synthesis</span></div>
       </div>
+      <div class="results-skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
     </section>
 
     <!-- Error Banner (Hidden by default) -->
@@ -352,14 +415,14 @@
     </div>
 
     <!-- Results Section (Hidden until analysis returns) -->
-    <div id="results-container" class="results-container hidden">
+    <div id="results-container" class="results-container hidden" aria-live="polite">
 
       <!-- Executive Decision Report Export Toolbar -->
       <section id="report-toolbar" class="card report-toolbar-card reveal-on-scroll">
         <div class="report-toolbar-content">
           <div class="report-toolbar-meta">
             <div class="report-badge-row">
-              <span class="report-chip-pill">📊 DECISION REPORT</span>
+              <span class="report-chip-pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h16M8 15l3-4 3 2 5-7"/></svg> DECISION REPORT</span>
               <span id="report-product-badge" class="report-item-pill">Product</span>
               <span id="report-date-badge" class="report-date-pill">Today</span>
             </div>
@@ -367,15 +430,15 @@
           </div>
           <div class="report-toolbar-actions">
             <button type="button" id="btn-export-whatsapp" class="btn btn-export btn-whatsapp" title="Copy clean formatted summary text for WhatsApp">
-              <span class="btn-export-icon">💬</span>
+              <svg class="btn-export-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3 20l1.2-4.6A8.5 8.5 0 1 1 20.5 11.5Z"/><path d="M8 8c.5 3 2 4.5 5 6l1.2-1.2 2 .8"/></svg>
               <span>Copy for WhatsApp</span>
             </button>
             <button type="button" id="btn-export-pdf" class="btn btn-export btn-pdf" title="Download Printable PDF Report">
-              <span class="btn-export-icon">📄</span>
+              <svg class="btn-export-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM14 3v5h5M8 13h8M8 17h6"/></svg>
               <span>Download PDF</span>
             </button>
             <button type="button" id="btn-export-png" class="btn btn-export btn-png" title="Download Executive Graphic Summary as PNG">
-              <span class="btn-export-icon">🖼️</span>
+              <svg class="btn-export-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
               <span>Download PNG</span>
             </button>
           </div>
@@ -389,7 +452,7 @@
 
       <!-- 2. GRID FOR MARKET & SOURCING -->
       <div class="results-grid reveal-on-scroll">
-        
+
         <!-- Online Market Card -->
         <section id="card-market" class="card card-result">
           <!-- Rendered dynamically -->
@@ -404,7 +467,7 @@
 
       <!-- 3. GRID FOR DEMAND & EXTERNAL SIGNALS -->
       <div class="results-grid reveal-on-scroll">
-        
+
         <!-- Demand Signal Card -->
         <section id="card-demand" class="card card-result">
           <!-- Rendered dynamically -->
@@ -437,7 +500,7 @@
   </main>
 
   <!-- Login & Authentication Modal -->
-  <div id="login-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div id="login-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="login-modal-desc" aria-hidden="true" inert>
     <div class="modal-card">
       <button type="button" id="modal-close-btn" class="modal-close-btn" aria-label="Close modal" onclick="window.closeLoginModal()">✕</button>
       <div class="modal-header">
@@ -445,7 +508,7 @@
           <img src="/static/img/logo.svg" alt="BharatPrice Pulse" class="modal-logo-img">
         </div>
         <h3 id="modal-title" class="modal-title">Sign In to BharatPrice Pulse</h3>
-        <p class="modal-subtitle">Access your private pricing history across your devices.</p>
+        <p id="login-modal-desc" class="modal-subtitle">Access your private pricing history across your devices.</p>
       </div>
       <div class="modal-body">
         <!-- 1-Click Kirana Demo Login -->
@@ -469,16 +532,16 @@
         </div>
 
         <!-- Google / Gmail Form -->
-        <form id="login-form" class="modal-form">
+        <form id="login-form" class="modal-form" novalidate>
           <div class="form-group">
             <label for="login-email" class="form-label">Gmail / Email Address</label>
             <div class="input-glow-wrap">
               <span class="input-icon">✉️</span>
-              <input 
-                type="email" 
-                id="login-email" 
-                class="form-control" 
-                placeholder="seller.yourname@gmail.com" 
+              <input
+                type="email"
+                id="login-email"
+                class="form-control"
+                placeholder="seller.yourname@gmail.com"
                 required
               >
             </div>
@@ -487,17 +550,19 @@
             <label for="login-name" class="form-label">Shop / Owner Name (Optional)</label>
             <div class="input-glow-wrap">
               <span class="input-icon">👤</span>
-              <input 
-                type="text" 
-                id="login-name" 
-                class="form-control" 
+              <input
+                type="text"
+                id="login-name"
+                class="form-control"
                 placeholder="e.g. Ramesh Kumar (Jai Bharat Kirana)"
               >
             </div>
           </div>
+          <p id="login-error" class="field-error-msg hidden" role="alert"></p>
+          <p id="login-success" class="login-success hidden" role="status">Signed in. Your history is ready.</p>
           <button type="submit" id="login-submit-btn" class="btn btn-primary btn-block">
-            <span>Sign In to My Account</span>
-            <span class="btn-spinner hidden" id="login-spinner"></span>
+            <span class="login-submit-label">Sign In to My Account</span>
+            <span class="btn-spinner hidden" id="login-spinner" aria-hidden="true"></span>
           </button>
         </form>
       </div>
@@ -508,7 +573,7 @@
   <footer class="app-footer">
     <div class="footer-container">
       <div class="footer-grid">
-        
+
         <!-- Col 1: About BharatPrice Pulse -->
         <div class="footer-col footer-col-about">
           <div class="footer-brand">

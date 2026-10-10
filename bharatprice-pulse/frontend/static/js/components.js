@@ -34,8 +34,10 @@ window.Components = {
         </div>
         <div class="action-meta-badges">
           <span class="badge-confidence">
-            ✦ Evidence Confidence: ${confLevel} (${confScore}/100)
+            <svg class="ui-icon-inline" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4v5c0 5-3.5 8-8 10-4.5-2-8-5-8-10V7zM9 12l2 2 4-4"/></svg>
+            Evidence Confidence: ${confLevel} (${confScore}/100)
           </span>
+          <div class="confidence-meter" role="img" aria-label="Evidence confidence ${confScore} out of 100"><span class="confidence-fill" style="--score:${Number(confScore)/100}"></span></div>
         </div>
       </div>
 
@@ -51,8 +53,7 @@ window.Components = {
   renderMarketCard(metrics, sellerPrice) {
     if (!metrics || metrics.comparable_count < 1) {
       return `
-        <h3 class="card-title">Online Market Prices</h3>
-        <p class="form-hint" style="margin-top:0.5rem;">No comparable online listings found for this exact SKU.</p>
+        <div class="card-empty-state"><span class="empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8M8 13h5"/></svg></span><h3 class="card-title">Online Competitor Prices</h3><p class="form-hint">No comparable online listings found for this exact item.</p></div>
       `;
     }
 
@@ -79,15 +80,15 @@ window.Components = {
       <div class="market-stats-grid">
         <div class="stat-box">
           <span class="stat-label">Your Price</span>
-          <span class="stat-value text-primary">₹${Number(sellerPrice || 0).toFixed(2)}</span>
+          <span class="stat-value text-primary count-up" data-count-up="${Number(sellerPrice || 0)}" data-prefix="₹" data-decimals="2">₹${Number(sellerPrice || 0).toFixed(2)}</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">Market Median</span>
-          <span class="stat-value">₹${metrics.price_median !== null && metrics.price_median !== undefined ? Number(metrics.price_median).toFixed(2) : '—'}</span>
+          <span class="stat-value count-up" ${metrics.price_median !== null && metrics.price_median !== undefined ? `data-count-up="${Number(metrics.price_median)}" data-prefix="₹" data-decimals="2"` : ''}>₹${metrics.price_median !== null && metrics.price_median !== undefined ? Number(metrics.price_median).toFixed(2) : '—'}</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">Observed Gap</span>
-          <span class="stat-value ${gapClass}">${numGap !== null ? `${gapSign}${numGap.toFixed(1)}%` : '—'}</span>
+          <span class="stat-value ${gapClass} count-up" ${numGap !== null ? `data-count-up="${numGap}" data-suffix="%" data-decimals="1"` : ''}>${numGap !== null ? `${gapSign}${numGap.toFixed(1)}%` : '—'}</span>
         </div>
       </div>
 
@@ -152,8 +153,7 @@ window.Components = {
   renderDemandCard(trends) {
     if (!trends || !trends.interest_over_time || trends.interest_over_time.length === 0) {
       return `
-        <h3 class="card-title">Consumer Demand Signal</h3>
-        <p class="form-hint" style="margin-top:0.5rem;">Google Trends search interest data unavailable for this specific keyword.</p>
+        <div class="card-empty-state"><span class="empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 17h4l3-8 4 6 3-4h4"/></svg></span><h3 class="card-title">Consumer Demand Signal</h3><p class="form-hint">Search interest data is unavailable for this item. You can still compare prices and sourcing evidence.</p></div>
       `;
     }
 
@@ -189,8 +189,7 @@ window.Components = {
 
     if (!hasNews && !hasFin) {
       return `
-        <h3 class="card-title">External Market Events</h3>
-        <p class="form-hint" style="margin-top:0.5rem;">No acute supply chain disruptions or regulatory alerts detected in recent news cycles.</p>
+        <div class="card-empty-state"><span class="empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg></span><h3 class="card-title">External Market Events</h3><p class="form-hint">No recent supply or regulatory alerts were found for this check.</p></div>
       `;
     }
 
@@ -283,41 +282,42 @@ window.Components = {
 
   renderSourcesCard(sources, searchesConsumed, fromCache) {
     if (!sources || sources.length === 0) return '';
-
+    const prices = sources.map(s => { const m = String(s.title || '').match(/₹\s?([\d,]+(?:\.\d+)?)/); return m ? Number(m[1].replace(/,/g,'')) : null; }).filter(Number.isFinite).sort((a,b)=>a-b);
+    const medianPrice = prices.length ? prices[Math.floor(prices.length/2)] : null;
+    const rows = sources.map((s, index) => {
+      const url = s.url || s.link || '';
+      const dateValue = s.retrieved_at || s.published_date || s.date || '';
+      const date = dateValue ? new Date(dateValue) : null;
+      const validDate = date && !Number.isNaN(date.getTime());
+      const ageDays = validDate ? Math.max(0, Math.floor((Date.now() - date.getTime()) / 86400000)) : null;
+      const older = ageDays !== null && ageDays > 365;
+      const dateLabel = validDate ? date.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' }) : 'Date unavailable';
+      const ageLabel = ageDays === null ? '' : (older ? 'Older' : ageDays === 0 ? 'Today' : ageDays < 30 ? `${ageDays}d ago` : `${Math.floor(ageDays / 30)}mo ago`);
+      const domain = (() => { try { return url ? new URL(url).hostname.replace(/^www\./,'') : ''; } catch (_) { return ''; } })();
+      const text = `${s.title || ''} ${s.source_name || ''}`;
+      const priceMatch = text.match(/₹\s?([\d,]+(?:\.\d+)?)/);
+      const price = priceMatch ? Number(priceMatch[1].replace(/,/g,'')) : null;
+      const country = s.country || (/\.in$/i.test(domain) ? 'India' : '');
+      const isOutlier = price !== null && medianPrice !== null && medianPrice > 0 && Math.abs(price - medianPrice) > medianPrice * .35;
+      const type = String(s.source_type || 'Evidence');
+      const kind = /shopping|listing/i.test(type) ? 'shopping' : /local|merchant/i.test(type) ? 'local' : /news/i.test(type) ? 'news' : 'other';
+      return `<tr data-kind="${kind}" data-price="${price ?? ''}" data-type="${type.toLowerCase()}" data-source="${(s.source_name || domain || '').toLowerCase()}" data-index="${index}">
+        <td><span class="badge badge-neutral">${type}</span></td>
+        <td><strong>${s.title || 'Evidence item'}</strong>${isOutlier ? '<span class="outlier-tag">Outlier</span>' : ''}</td>
+        <td><span>${s.source_name || 'SerpApi Engine'}</span>${domain ? `<small class="source-domain">${country ? country + ' · ' : ''}${domain}</small>` : ''}</td>
+        <td><span class="evidence-date">${dateLabel}</span>${ageLabel ? `<span class="age-tag ${older ? 'age-older' : ''}">${ageLabel}</span>` : ''}</td>
+        <td>${url ? `<a href="${url}" target="_blank" rel="noopener noreferrer" class="source-link-icon" aria-label="Open source: ${domain || s.title || 'evidence'}" title="Open source"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6m0-6-9 9"/><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6"/></svg></a>` : '<span class="form-hint">—</span>'}</td>
+      </tr>`;
+    }).join('');
     return `
-      <div class="card-header-flex">
-        <h3 class="card-title">Evidence Provenance Audit</h3>
-        <span class="badge badge-neutral">SerpApi Searches: ${searchesConsumed || 1}</span>
+      <div class="card-header-flex"><h3 class="card-title">Evidence Provenance Audit</h3><span class="badge badge-neutral">SerpApi Searches: ${searchesConsumed || 1}</span></div>
+      <p class="form-hint evidence-intro">Every recommendation is grounded in verifiable source evidence.</p>
+      <div class="evidence-controls" role="group" aria-label="Filter evidence">
+        <div class="evidence-filters"><button type="button" class="filter-chip active" data-filter="all">All</button><button type="button" class="filter-chip" data-filter="shopping">Shopping</button><button type="button" class="filter-chip" data-filter="local">Local</button><button type="button" class="filter-chip" data-filter="news">News</button></div>
+        <label class="sort-control">Sort <select class="evidence-sort" aria-label="Sort evidence"><option value="type">Type</option><option value="price">Price</option><option value="source">Source</option></select></label>
       </div>
-
-      <p class="form-hint" style="margin-bottom:0.75rem;">
-        Every insight generated in BharatPrice Pulse is grounded in verifiable external citations:
-      </p>
-
-      <div class="sources-table-container">
-        <table class="sources-table">
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Observed Evidence</th>
-              <th>Source</th>
-              <th>Verification</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${sources.map(s => `
-              <tr>
-                <td><span class="badge badge-neutral">${s.source_type}</span></td>
-                <td><strong>${s.title}</strong></td>
-                <td>${s.source_name || 'SerpApi Engine'}</td>
-                <td>
-                  ${(s.url || s.link) ? `<a href="${s.url || s.link}" target="_blank" rel="noopener" class="btn btn-sm">View Listing ↗</a>` : '<span>Ground Truth</span>'}
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
-    `;
+      <div class="sources-table-container" tabindex="0" aria-label="Evidence table, scroll horizontally on small screens">
+        <table class="sources-table"><thead><tr><th>Type</th><th>Observed Evidence</th><th>Source</th><th>Retrieved</th><th>Link</th></tr></thead><tbody>${rows}</tbody></table>
+      </div>`;
   }
 };

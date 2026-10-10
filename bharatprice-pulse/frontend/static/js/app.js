@@ -28,25 +28,53 @@ const BPP_AUTH = {
     window.dispatchEvent(new CustomEvent('bpp:auth-changed', { detail: user }));
   },
 
+  modalTrigger: null,
   openModal() {
     const modal = document.getElementById('login-modal');
-    if (modal) {
-      modal.classList.remove('hidden');
-      modal.style.display = 'flex';
-      const emailInput = document.getElementById('login-email');
-      if (emailInput) setTimeout(() => emailInput.focus(), 80);
-    }
+    if (!modal) return;
+    this.modalTrigger = document.activeElement;
+    modal.inert = false;
+    modal.setAttribute('aria-hidden', 'false');
+    modal.classList.remove('hidden');
+    document.body.classList.add('modal-open');
+    const emailInput = document.getElementById('login-email');
+    window.requestAnimationFrame(() => emailInput?.focus());
   },
 
   closeModal() {
     const modal = document.getElementById('login-modal');
-    if (modal) {
+    if (!modal || modal.classList.contains('hidden')) return;
+    modal.classList.add('is-closing');
+    window.setTimeout(() => {
       modal.classList.add('hidden');
-      modal.style.display = 'none';
+      modal.classList.remove('is-closing');
+      modal.inert = true;
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      this.modalTrigger?.focus?.();
+      this.modalTrigger = null;
+    }, 180);
+  },
+
+  trapFocus(e) {
+    const modal = document.getElementById('login-modal');
+    if (!modal || modal.classList.contains('hidden')) return;
+    if (e.key === 'Escape') { e.preventDefault(); this.closeModal(); return; }
+    if (e.key !== 'Tab') return;
+    const items = [...modal.querySelectorAll('button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+      .filter(el => !el.closest('.hidden') && el.getClientRects().length);
+    if (!items.length) return;
+    const first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && (document.activeElement === last || !modal.contains(document.activeElement))) {
+      e.preventDefault(); first.focus();
     }
   },
 
   async quickDemoLogin() {
+    const demoBtn = document.getElementById('demo-login-btn');
+    if (demoBtn) { demoBtn.disabled = true; demoBtn.setAttribute('aria-busy', 'true'); }
     const demoPayload = {
       email: 'seller.ramesh@gmail.com',
       name: 'Ramesh Kumar (Kirana)',
@@ -68,52 +96,52 @@ const BPP_AUTH = {
     } catch (e) {
       this.setUser(demoPayload);
     }
-    this.closeModal();
+    const success = document.getElementById('login-success');
+    if (success) { success.classList.remove('hidden'); success.textContent = 'Signed in as Ramesh Kumar. Your history is ready.'; }
+    this.updateUI();
+    window.setTimeout(() => this.closeModal(), 550);
+    if (demoBtn) { demoBtn.disabled = false; demoBtn.removeAttribute('aria-busy'); }
   },
 
   async handleFormLogin(e) {
-    if (e && e.preventDefault) e.preventDefault();
+    e?.preventDefault?.();
     const emailInput = document.getElementById('login-email');
     const nameInput = document.getElementById('login-name');
     const spinner = document.getElementById('login-spinner');
     const submitBtn = document.getElementById('login-submit-btn');
-
-    const email = emailInput?.value.trim();
-    const name = nameInput?.value.trim();
-
-    if (!email || !email.includes('@')) {
-      alert('Please enter a valid Gmail / email address.');
+    const errorEl = document.getElementById('login-error');
+    const successEl = document.getElementById('login-success');
+    const email = emailInput?.value.trim() || '';
+    const name = nameInput?.value.trim() || '';
+    if (errorEl) { errorEl.classList.add('hidden'); errorEl.textContent = ''; }
+    if (successEl) successEl.classList.add('hidden');
+    if (!emailInput?.checkValidity()) {
+      emailInput?.classList.add('is-invalid');
+      if (errorEl) { errorEl.textContent = 'Enter a valid email address to continue.'; errorEl.classList.remove('hidden'); }
+      emailInput?.focus();
       return;
     }
-
+    emailInput.classList.remove('is-invalid');
     if (spinner) spinner.classList.remove('hidden');
-    if (submitBtn) submitBtn.disabled = true;
-
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.setAttribute('aria-busy', 'true'); }
     try {
       const resp = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, name, provider: 'email' }),
       });
-      if (resp.ok) {
-        const data = await resp.json();
-        this.setUser(data.user);
-        this.closeModal();
-      } else {
+      if (!resp.ok) {
         const err = await resp.json().catch(() => ({}));
-        alert(err.detail || 'Login failed. Please check your email.');
+        throw new Error(err.detail || 'Sign-in failed. Please try again.');
       }
+      const data = await resp.json();
+      this.setUser(data.user);
+      if (successEl) successEl.classList.remove('hidden');
+      window.setTimeout(() => this.closeModal(), 550);
     } catch (err) {
-      // Offline fallback
-      this.setUser({
-        email,
-        name: name || email.split('@')[0],
-        provider: 'email',
-      });
-      this.closeModal();
+      if (errorEl) { errorEl.textContent = err.message || 'Could not sign in. Check your connection and retry.'; errorEl.classList.remove('hidden'); }
     } finally {
       if (spinner) spinner.classList.add('hidden');
-      if (submitBtn) submitBtn.disabled = false;
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.removeAttribute('aria-busy'); }
     }
   },
 
@@ -133,10 +161,13 @@ const BPP_AUTH = {
     const nameEl = document.getElementById('user-display-name');
     const emailEl = document.getElementById('user-display-email');
     const avatarEl = document.getElementById('user-avatar-img');
+    const profileTrigger = document.getElementById('user-profile-trigger');
+    const clearHistoryBtn = document.getElementById('clear-history-btn');
 
     if (user && user.email) {
       if (authBtn) authBtn.classList.add('hidden');
       if (userBadge) userBadge.classList.remove('hidden');
+      if (clearHistoryBtn) clearHistoryBtn.classList.remove('hidden');
       if (nameEl) nameEl.textContent = user.name || user.email.split('@')[0];
       if (emailEl) emailEl.textContent = user.email;
       if (avatarEl) {
@@ -145,6 +176,9 @@ const BPP_AUTH = {
     } else {
       if (authBtn) authBtn.classList.remove('hidden');
       if (userBadge) userBadge.classList.add('hidden');
+      if (clearHistoryBtn) clearHistoryBtn.classList.add('hidden');
+      document.getElementById('user-profile-menu')?.classList.add('hidden');
+      profileTrigger?.setAttribute('aria-expanded', 'false');
     }
   },
 
@@ -164,10 +198,23 @@ const BPP_AUTH = {
 
     const modal = document.getElementById('login-modal');
     if (modal) {
-      modal.onclick = (e) => {
-        if (e.target === modal) this.closeModal();
-      };
+      modal.onclick = (e) => { if (e.target === modal) this.closeModal(); };
+      modal.inert = true;
+      document.addEventListener('keydown', (e) => this.trapFocus(e));
     }
+
+    const profileTrigger = document.getElementById('user-profile-trigger');
+    const profileMenu = document.getElementById('user-profile-menu');
+    if (profileTrigger && profileMenu) profileTrigger.onclick = () => {
+      const open = profileMenu.classList.toggle('hidden') === false;
+      profileTrigger.setAttribute('aria-expanded', String(open));
+    };
+    document.addEventListener('click', (e) => {
+      if (profileMenu && !e.target.closest('.user-profile-wrap')) {
+        profileMenu.classList.add('hidden');
+        profileTrigger?.setAttribute('aria-expanded', 'false');
+      }
+    });
 
     const demoBtn = document.getElementById('demo-login-btn');
     if (demoBtn) demoBtn.onclick = () => this.quickDemoLogin();
@@ -184,12 +231,73 @@ window.BPP_AUTH = BPP_AUTH;
 window.openLoginModal = () => BPP_AUTH.openModal();
 window.closeLoginModal = () => BPP_AUTH.closeModal();
 
+// Replace decorative emoji glyphs with a small consistent inline SVG icon set.
+function normalizeUiIcons(root = document.body) {
+  const pictograph = /\p{Extended_Pictographic}(?:\uFE0F|\uFE0E)?/gu;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (node.parentElement?.closest('script,style,textarea,input,[contenteditable="true"],.user-content')) continue;
+    if (pictograph.test(node.nodeValue)) nodes.push(node);
+    pictograph.lastIndex = 0;
+  }
+  const paths = {
+    map: 'M9 18l-6 3V6l6-3m0 15 6 3m-6-3V3m6 18 6-3V3l-6 3m0 15V6m0 0L9 3',
+    chart: 'M3 3v18h18M7 14l4-4 4 3 6-7',
+    shopping: 'M3 3h2l2.2 11.5a2 2 0 0 0 2 1.5h8.6a2 2 0 0 0 2-1.6L21 8H6M10 21h.01M18 21h.01',
+    person: 'M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8',
+    file: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zm0 0v6h6M8 13h8m-8 4h8',
+    search: 'M11 19a8 8 0 1 1 5.7-2.4L21 21m-10-10h.01',
+    box: 'M21 8l-9-5-9 5v8l9 5 9-5zm-9 5 9-5m-9 5-9-5m9 5v8',
+    drop: 'M12 22a7 7 0 0 0 7-7c0-4-7-13-7-13S5 11 5 15a7 7 0 0 0 7 7z',
+    grain: 'M12 22V3m0 4c-4 0-6-2-6-5m6 9c4 0 6-2 6-5m-6 9c-4 0-6-2-6-5m6 9c4 0 6-2 6-5',
+    phone: 'M5 2h14v20H5zM9 5h6m-4 14h2',
+    bolt: 'm13 2-3 8h7l-6 12 1-9H5z',
+    sun: 'M12 3v2m0 14v2M5.6 5.6 7 7m10 10 1.4 1.4M3 12h2m14 0h2M5.6 18.4 7 17m10-10 1.4-1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',
+    moon: 'M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5z',
+    shield: 'M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11zm-3-11 2 2 4-4',
+    spark: 'm12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3zm7 12 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z',
+  };
+  const keyFor = emoji => /📍|🌐/.test(emoji) ? 'map' : /📈|📊/.test(emoji) ? 'chart' : /🛒|🏪/.test(emoji) ? 'shopping' : /👤|🔑|✉️/.test(emoji) ? 'person' : /📄|📝|📜/.test(emoji) ? 'file' : /🔍|👁️/.test(emoji) ? 'search' : /📦/.test(emoji) ? 'box' : /🛢️|💧/.test(emoji) ? 'drop' : /🍚/.test(emoji) ? 'grain' : /📱/.test(emoji) ? 'phone' : /⚡/.test(emoji) ? 'bolt' : /☀️/.test(emoji) ? 'sun' : /🌙/.test(emoji) ? 'moon' : /⚖️|🩺/.test(emoji) ? 'shield' : 'spark';
+  for (const node of nodes) {
+    const text = node.nodeValue;
+    const matches = [...text.matchAll(pictograph)];
+    for (const match of matches.reverse()) {
+      const range = document.createRange();
+      range.setStart(node, match.index); range.setEnd(node, match.index + match[0].length);
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true'); svg.classList.add('ui-icon-inline');
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', paths[keyFor(match[0])] || paths.spark); svg.appendChild(path);
+      range.deleteContents(); range.insertNode(svg);
+    }
+  }
+}
+
+function initHeaderMotion() {
+  const header = document.querySelector('.app-header');
+  if (!header) return;
+  const update = () => header.classList.toggle('is-scrolled', window.scrollY > 40);
+  window.addEventListener('scroll', update, { passive: true }); update();
+}
+
+function splitHeroHeadline() {
+  const headline = document.querySelector('.hero-title');
+  if (!headline || headline.dataset.split) return;
+  headline.dataset.split = 'true';
+  [...headline.children].forEach((part, index) => {
+    part.classList.add('hero-line');
+    part.style.animationDelay = `${140 + index * 180}ms`;
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Glitter Stardust Background Particle System
 // ---------------------------------------------------------------------------
 function initGlitterEngine() {
   const canvas = document.getElementById('glitter-canvas');
-  if (!canvas) return;
+  if (!canvas || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const ctx = canvas.getContext('2d');
   let width = (canvas.width = window.innerWidth);
@@ -309,8 +417,9 @@ function initThemeEngine() {
     toggleBtn.onclick = () => {
       const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('bpp_theme', newTheme);
+      const apply = () => { document.documentElement.setAttribute('data-theme', newTheme); localStorage.setItem('bpp_theme', newTheme); };
+      if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.startViewTransition(apply);
+      else apply();
     };
   }
 }
@@ -328,6 +437,10 @@ async function updateQuotaBadge() {
       const data = await res.json();
       const modeStr = data.mock_mode ? ' (Mock)' : '';
       badgeText.textContent = `${data.monthly_remaining}/${data.monthly_limit} Searches${modeStr}`;
+      badgeText.dataset.quotaShort = `${data.monthly_remaining}/${data.monthly_limit}`;
+      badgeText.title = `${data.monthly_remaining} of ${data.monthly_limit} SerpApi searches remaining${data.mock_mode ? ' · Mock mode' : ''}`;
+      badgeText.classList.remove('quota-updated'); void badgeText.offsetWidth; badgeText.classList.add('quota-updated');
+      badgeText.setAttribute('aria-label', `${data.monthly_remaining} of ${data.monthly_limit} SerpApi searches remaining${data.mock_mode ? ', mock mode' : ''}`);
     }
   } catch (e) {
     console.warn('Could not fetch quota telemetry:', e);
@@ -350,6 +463,15 @@ async function handleFormSubmit(e) {
   const errorBanner = document.getElementById('error-banner');
   if (errorBanner) errorBanner.classList.add('hidden');
 
+  // Reset previous inline validation errors
+  [productInput, cityInput, priceInput].forEach(inp => inp?.classList.remove('is-invalid'));
+  const errProd = document.getElementById('err-product');
+  const errCity = document.getElementById('err-city');
+  const errPrice = document.getElementById('err-price');
+  if (errProd) errProd.classList.add('hidden');
+  if (errCity) errCity.classList.add('hidden');
+  if (errPrice) errPrice.classList.add('hidden');
+
   const product = productInput?.value.trim();
   const city = cityInput?.value.trim();
   const price = parseFloat(priceInput?.value);
@@ -357,15 +479,30 @@ async function handleFormSubmit(e) {
   const description = descInput?.value.trim() || null;
 
   if (!product || product.length < 2) {
-    showError('Please enter a product name with at least 2 characters.');
+    if (productInput) {
+      productInput.classList.add('is-invalid');
+      productInput.focus();
+    }
+    if (errProd) errProd.classList.remove('hidden');
+    showError('Please enter a valid product name with at least 2 characters.');
     return;
   }
   if (!city || city.length < 2) {
-    showError('Please enter your city/location.');
+    if (cityInput) {
+      cityInput.classList.add('is-invalid');
+      cityInput.focus();
+    }
+    if (errCity) errCity.classList.remove('hidden');
+    showError('Please enter your city or market location.');
     return;
   }
   if (isNaN(price) || price <= 0) {
-    showError('Please enter a valid positive selling price.');
+    if (priceInput) {
+      priceInput.classList.add('is-invalid');
+      priceInput.focus();
+    }
+    if (errPrice) errPrice.classList.remove('hidden');
+    showError('Please enter a valid selling price greater than ₹0.');
     return;
   }
 
@@ -445,6 +582,7 @@ async function handleFormSubmit(e) {
 function runProgressAnimation() {
   const progressBar = document.getElementById('progress-bar');
   const progressMsg = document.getElementById('progress-message');
+  document.querySelectorAll('.step-chip').forEach(chip => chip.classList.remove('active','done'));
 
   const steps = [
     { pct: 25, id: 'step-1', msg: 'Distilling description & querying SerpApi Google Shopping…' },
@@ -454,20 +592,60 @@ function runProgressAnimation() {
   ];
 
   let currentStep = 0;
-  if (progressBar) progressBar.style.width = '15%';
+  if (progressBar) progressBar.style.transform = 'scaleX(0.15)';
   if (progressMsg && steps[0]) progressMsg.textContent = steps[0].msg;
 
   return setInterval(() => {
     currentStep++;
     if (currentStep < steps.length) {
-      if (progressBar) progressBar.style.width = `${steps[currentStep].pct}%`;
+      if (progressBar) progressBar.style.transform = `scaleX(${steps[currentStep].pct / 100})`;
       if (progressMsg) progressMsg.textContent = steps[currentStep].msg;
       
       document.querySelectorAll('.step-chip').forEach(chip => chip.classList.remove('active'));
       const activeChip = document.getElementById(steps[currentStep].id);
       if (activeChip) activeChip.classList.add('active');
+      for (let i = 1; i <= currentStep; i++) document.getElementById(`step-${i}`)?.classList.add('done');
     }
   }, 1200);
+}
+
+function animateCountUps(root) {
+  if (!root || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  root.querySelectorAll('[data-count-up]').forEach(el => {
+    const target = Number(el.dataset.countUp);
+    if (!Number.isFinite(target)) return;
+    const decimals = Number(el.dataset.decimals || 0);
+    const prefix = el.dataset.prefix || '', suffix = el.dataset.suffix || '';
+    const start = performance.now(), duration = 520;
+    const tick = now => {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = target * eased;
+      el.textContent = `${prefix}${value.toLocaleString('en-IN',{minimumFractionDigits:decimals,maximumFractionDigits:decimals})}${suffix}`;
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+function initEvidenceControls(card) {
+  if (!card || card.dataset.controlsBound) return;
+  card.dataset.controlsBound = 'true';
+  card.addEventListener('click', event => {
+    const chip = event.target.closest('[data-filter]');
+    if (!chip) return;
+    card.querySelectorAll('.filter-chip').forEach(item => item.classList.toggle('active', item === chip));
+    const filter = chip.dataset.filter;
+    card.querySelectorAll('tbody tr').forEach(row => row.hidden = filter !== 'all' && row.dataset.kind !== filter);
+  });
+  card.addEventListener('change', event => {
+    if (!event.target.matches('.evidence-sort')) return;
+    const tbody = card.querySelector('tbody');
+    const rows = [...tbody.querySelectorAll('tr')];
+    const key = event.target.value;
+    rows.sort((a,b) => key === 'price' ? (Number(a.dataset.price || Infinity) - Number(b.dataset.price || Infinity)) : (a.dataset[key] || '').localeCompare(b.dataset[key] || ''));
+    rows.forEach(row => tbody.appendChild(row));
+  });
 }
 
 function renderAnalysisResults(data, sellerPrice, costPrice) {
@@ -475,7 +653,7 @@ function renderAnalysisResults(data, sellerPrice, costPrice) {
   window.CURRENT_ANALYSIS = { data, sellerPrice, costPrice };
 
   const container = document.getElementById('results-container');
-  if (container) container.classList.remove('hidden');
+  if (container) { container.classList.remove('hidden'); container.querySelectorAll('.reveal-on-scroll').forEach((el,index) => { el.style.setProperty('--reveal-order', String(index)); el.classList.remove('revealed'); requestAnimationFrame(() => el.classList.add('revealed')); }); }
 
   const progressSection = document.getElementById('progress-section');
   if (progressSection) {
@@ -586,12 +764,16 @@ function renderAnalysisResults(data, sellerPrice, costPrice) {
     );
   }
 
+  animateCountUps(container);
+  requestAnimationFrame(() => actionCard?.classList.add('is-ready'));
+  initEvidenceControls(sourcesCard);
+
   if (window.BPP_OBSERVE_SCROLL) {
     window.BPP_OBSERVE_SCROLL();
   }
 
   if (actionCard) {
-    actionCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    actionCard.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
   }
 }
 
@@ -611,6 +793,8 @@ function showToast(message, isError = false) {
   const toast = document.createElement('div');
   toast.id = 'bpp-toast';
   toast.className = `bpp-toast ${isError ? 'toast-error' : ''}`;
+  toast.setAttribute('role', isError ? 'alert' : 'status');
+  toast.setAttribute('aria-live', isError ? 'assertive' : 'polite');
   toast.innerHTML = `<span>${message}</span>`;
   document.body.appendChild(toast);
 
@@ -632,7 +816,7 @@ function fallbackCopyText(text) {
   ta.select();
   try {
     document.execCommand('copy');
-    showToast('💬 WhatsApp report copied to clipboard!');
+    showToast('Copied for WhatsApp');
   } catch (e) {
     showToast('Could not copy to clipboard. Please copy manually.', true);
   }
@@ -1025,13 +1209,34 @@ function showError(msg) {
   }
 }
 
+
+function initViewNavigation() {
+  const progress = document.createElement('div'); progress.className = 'top-progress'; progress.setAttribute('aria-hidden','true'); document.body.prepend(progress);
+  document.querySelectorAll('a[href="/"], a[href="/history"]').forEach(link => {
+    link.addEventListener('click', event => {
+      const target = new URL(link.href, location.href);
+      if (target.pathname === location.pathname) return;
+      event.preventDefault();
+      progress.classList.remove('active'); void progress.offsetWidth; progress.classList.add('active');
+      const navigate = () => { location.href = target.href; };
+      window.setTimeout(() => { if (!document.startViewTransition) navigate(); }, 220);
+      if (document.startViewTransition) document.startViewTransition(navigate);
+    });
+  });
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.addEventListener('pageshow', () => window.scrollTo(0, 0));
+}
+
 // ---------------------------------------------------------------------------
 // App Bootstrap Function (Executes safely regardless of load timing)
 // ---------------------------------------------------------------------------
 async function initApp() {
   try { initThemeEngine(); } catch (e) { console.warn('Theme init warning:', e); }
+  try { initViewNavigation(); initHeaderMotion(); normalizeUiIcons(); } catch (e) { console.warn('View navigation warning:', e); }
+  const iconObserver = new MutationObserver(() => { if (!window._bppIconFrame) window._bppIconFrame = requestAnimationFrame(() => { window._bppIconFrame = 0; normalizeUiIcons(); }); });
+  iconObserver.observe(document.body, { childList: true, subtree: true });
   try { BPP_AUTH.init(); } catch (e) { console.warn('BPP_AUTH init warning:', e); }
-  try { initGlitterEngine(); } catch (e) { console.warn('Glitter engine warning:', e); }
+  // The static CSS aurora replaces the old per-frame particle canvas to keep rendering light.
   try { initScrollReveal(); } catch (e) { console.warn('Scroll reveal warning:', e); }
 
   if (window.i18n) {
@@ -1042,6 +1247,7 @@ async function initApp() {
     }
   }
 
+  splitHeroHeadline();
   try { await updateQuotaBadge(); } catch (e) { console.warn('Quota badge warning:', e); }
 
   const langSelect = document.getElementById('lang-select');
@@ -1079,14 +1285,84 @@ async function initApp() {
         }
       }
 
-      chip.style.transform = 'scale(0.95)';
-      setTimeout(() => { chip.style.transform = ''; }, 150);
+      chip.classList.add('is-pressed');
+      setTimeout(() => chip.classList.remove('is-pressed'), 150);
     };
   });
+
+  // Real-time inline field validation feedback & error clearing
+  ['product_raw', 'city_raw', 'selling_price'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      el.classList.remove('is-invalid');
+      const errEl = document.getElementById(
+        id === 'product_raw' ? 'err-product' :
+        id === 'city_raw' ? 'err-city' : 'err-price'
+      );
+      if (errEl) errEl.classList.add('hidden');
+      const errorBanner = document.getElementById('error-banner');
+      if (errorBanner) errorBanner.classList.add('hidden');
+    });
+  });
+
+  // URL Auto-fill support (e.g. from history card links or shared links)
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pProduct = urlParams.get('product') || urlParams.get('product_raw');
+    const pCity = urlParams.get('city') || urlParams.get('city_raw');
+    const pPrice = urlParams.get('price') || urlParams.get('selling_price');
+    const pCost = urlParams.get('cost') || urlParams.get('landed_cost');
+    const pDesc = urlParams.get('desc') || urlParams.get('description_raw');
+    const pMode = urlParams.get('mode') || urlParams.get('analysis_mode');
+
+    let hasPreFill = false;
+    if (pProduct) {
+      const prodEl = document.getElementById('product_raw');
+      if (prodEl) { prodEl.value = pProduct; hasPreFill = true; }
+    }
+    if (pCity) {
+      const cityEl = document.getElementById('city_raw');
+      if (cityEl) { cityEl.value = pCity; hasPreFill = true; }
+    }
+    if (pPrice) {
+      const priceEl = document.getElementById('selling_price');
+      if (priceEl) { priceEl.value = pPrice; hasPreFill = true; }
+    }
+    if (pCost) {
+      const costEl = document.getElementById('landed_cost');
+      if (costEl) costEl.value = pCost;
+    }
+    if (pDesc) {
+      const descEl = document.getElementById('description_raw');
+      if (descEl) descEl.value = pDesc;
+    }
+    if (pMode) {
+      const modeRadio = document.querySelector(`input[name="analysis_mode"][value="${pMode}"]`);
+      if (modeRadio) modeRadio.checked = true;
+    }
+
+    if (hasPreFill) {
+      const searchCard = document.getElementById('search-card');
+      if (searchCard) {
+        setTimeout(() => {
+          searchCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+      }
+    }
+  } catch (err) {
+    console.warn('URL auto-fill error:', err);
+  }
 
   const form = document.getElementById('analysis-form');
   if (form) {
     form.onsubmit = handleFormSubmit;
+    form.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handleFormSubmit(e);
+      }
+    });
   }
 }
 
