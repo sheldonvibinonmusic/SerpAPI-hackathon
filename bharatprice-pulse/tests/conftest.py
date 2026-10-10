@@ -15,7 +15,7 @@ sys.path.insert(0, str(project_root))
 # Set mock mode before settings import
 os.environ["SERPAPI_MOCK_MODE"] = "true"
 os.environ["SERPAPI_KEY"] = "mock_test_key"
-os.environ["DATABASE_PATH"] = ":memory:"
+os.environ["DATABASE_PATH"] = "data/test_run.db"
 
 from app.models.request_models import AnalysisRequest, AnalysisMode, UILanguage
 from app.config.settings import get_settings
@@ -26,10 +26,11 @@ def mock_settings(monkeypatch):
     """Ensure mock mode is active for all tests."""
     monkeypatch.setenv("SERPAPI_MOCK_MODE", "true")
     monkeypatch.setenv("SERPAPI_KEY", "mock_test_key")
-    monkeypatch.setenv("DATABASE_PATH", ":memory:")
+    monkeypatch.setenv("DATABASE_PATH", "data/test_run.db")
     settings = get_settings()
     settings.serpapi_mock_mode = True
     settings.serpapi_key = "mock_test_key"
+    settings.database_path = "data/test_run.db"
     return settings
 
 

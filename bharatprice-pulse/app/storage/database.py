@@ -50,12 +50,39 @@ async def init_db() -> None:
                 confidence_score REAL,
                 searches_consumed INTEGER NOT NULL,
                 mock_mode INTEGER NOT NULL,
-                full_response_json TEXT NOT NULL
+                full_response_json TEXT NOT NULL,
+                user_email TEXT DEFAULT 'guest@bharatprice.local',
+                product_description TEXT
             )
         """)
         await db.execute("CREATE INDEX IF NOT EXISTS idx_history_timestamp ON analysis_history(timestamp DESC)")
 
-        # 3. Telemetry log (tracks search usage locally)
+        # Migration: Ensure user_email and product_description columns exist if table existed before
+        try:
+            async with db.execute("PRAGMA table_info(analysis_history)") as cursor:
+                columns = [row[1] for row in await cursor.fetchall()]
+                if "user_email" not in columns:
+                    await db.execute("ALTER TABLE analysis_history ADD COLUMN user_email TEXT DEFAULT 'guest@bharatprice.local'")
+                if "product_description" not in columns:
+                    await db.execute("ALTER TABLE analysis_history ADD COLUMN product_description TEXT")
+        except Exception as e:
+            logger.warning(f"Could not check/migrate analysis_history schema: {e}")
+
+        await db.execute("CREATE INDEX IF NOT EXISTS idx_history_user ON analysis_history(user_email, timestamp DESC)")
+
+        # 3. Users table for deployable multi-tenant authentication
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                email TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                provider TEXT DEFAULT 'google',
+                avatar_url TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+
+        # 4. Telemetry log (tracks search usage locally)
         await db.execute("""
             CREATE TABLE IF NOT EXISTS telemetry_log (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -9,7 +9,7 @@ auditability but never sent directly to external APIs.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -138,6 +138,21 @@ class AnalysisRequest(BaseModel):
         description="SerpApi Image API upload ID for photo-based product recognition (Deep mode only)",
     )
 
+    # Optional detailed product description for intelligent disambiguation
+    description_raw: Optional[str] = Field(
+        default=None,
+        max_length=1000,
+        description="Optional detailed product description from seller for disambiguation",
+        examples=["1121 steam basmati rice, 2 years aged, premium long grain"],
+    )
+
+    # User identification for personal history scoping
+    user_email: Optional[str] = Field(
+        default=None,
+        max_length=255,
+        description="Logged-in seller's Gmail/email address for personal history tracking",
+    )
+
     @field_validator("selling_price", "landed_cost", "mrp", mode="before")
     @classmethod
     def coerce_price(cls, v):
@@ -192,6 +207,8 @@ class NormalizedQuery(BaseModel):
     pack_count: int = Field(default=1, description="Number of items in pack/bundle")
     is_bundle: bool = Field(default=False, description="True if this is a multi-unit bundle/combo")
     search_query: str = Field(description="Canonical search string for SerpApi queries")
+    description_raw: Optional[str] = Field(default=None, description="Original description text supplied by user")
+    distilled_tokens: List[str] = Field(default_factory=list, description="Distilled high-signal descriptor tokens")
 
     # Location
     city: str = Field(description="Normalized city name")

@@ -5,25 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analysis History — BharatPrice Pulse</title>
   <link rel="stylesheet" href="/static/css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇮🇳</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
+  <script>
+    // Fail-safe global modal controllers
+    window.openLoginModal = function() {
+      if (window.BPP_AUTH && typeof window.BPP_AUTH.openModal === 'function') {
+        window.BPP_AUTH.openModal();
+        return;
+      }
+      var modal = document.getElementById('login-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        var inp = document.getElementById('login-email');
+        if (inp) setTimeout(function() { inp.focus(); }, 80);
+      }
+    };
+    window.closeLoginModal = function() {
+      if (window.BPP_AUTH && typeof window.BPP_AUTH.closeModal === 'function') {
+        window.BPP_AUTH.closeModal();
+        return;
+      }
+      var modal = document.getElementById('login-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    };
+  </script>
 </head>
 <body>
 
-  <!-- Ambient Dynamic Lighting Layer -->
+  <!-- Ambient Dynamic Lighting & Interactive Glitter Canvas -->
+  <canvas id="glitter-canvas" class="glitter-canvas" aria-hidden="true"></canvas>
   <div class="ambient-glow ambient-glow-top" aria-hidden="true"></div>
 
   <!-- Navigation Bar -->
   <header class="app-header">
     <div class="header-container">
-      <div class="brand">
+      <a href="/" class="brand" style="text-decoration: none;">
         <div class="brand-badge">
-          <span class="flag-icon">🇮🇳</span>
+          <img src="/static/img/logo.svg" alt="BharatPrice Pulse Logo" class="brand-logo-img">
+          <span class="pulse-ring"></span>
         </div>
-        <div>
+        <div class="brand-text-wrap">
           <h1 class="brand-title">BharatPrice Pulse</h1>
           <p class="brand-tagline">My Saved Market Checks</p>
         </div>
-      </div>
+      </a>
 
       <div class="header-actions">
         <!-- Theme Mode Toggle -->
@@ -32,8 +61,24 @@
           <span class="theme-icon moon-icon">🌙</span>
         </button>
 
+        <!-- User Authentication Widget -->
+        <div id="auth-header-widget" class="auth-header-widget">
+          <button type="button" id="auth-login-btn" class="btn btn-auth-pill" onclick="window.openLoginModal()">
+            <span class="auth-icon">🔑</span>
+            <span id="auth-btn-label">Sign In</span>
+          </button>
+          <div id="user-profile-badge" class="user-profile-badge hidden">
+            <img id="user-avatar-img" class="user-avatar-img" src="" alt="Avatar">
+            <div class="user-info-text">
+              <span id="user-display-name" class="user-name"></span>
+              <span id="user-display-email" class="user-email-text"></span>
+            </div>
+            <button type="button" id="auth-logout-btn" class="btn-logout" title="Sign Out">✕</button>
+          </div>
+        </div>
+
         <a href="/" class="btn btn-secondary">← Back to Price Check</a>
-        <button id="clear-history-btn" class="btn btn-outline-danger">Clear All History</button>
+        <button id="clear-history-btn" class="btn btn-outline-danger">Clear My History</button>
       </div>
     </div>
   </header>
@@ -42,7 +87,7 @@
     <section class="history-hero">
       <div class="history-hero-text">
         <h2>Past Market Snapshots</h2>
-        <p>Review and audit previous pricing intelligence runs stored in your local SQLite store without expending extra SerpApi credits.</p>
+        <p id="history-subtitle">Review previous pricing intelligence decisions securely saved to your account.</p>
       </div>
     </section>
 
@@ -55,26 +100,203 @@
     </div>
   </main>
 
+  <!-- Login & Authentication Modal -->
+  <div id="login-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <button type="button" id="modal-close-btn" class="modal-close-btn" aria-label="Close modal" onclick="window.closeLoginModal()">✕</button>
+      <div class="modal-header">
+        <div class="modal-logo-wrap">
+          <img src="/static/img/logo.svg" alt="BharatPrice Pulse" class="modal-logo-img">
+        </div>
+        <h3 id="modal-title" class="modal-title">Sign In to BharatPrice Pulse</h3>
+        <p class="modal-subtitle">Access your private pricing history across your devices.</p>
+      </div>
+      <div class="modal-body">
+        <!-- 1-Click Kirana Demo Login -->
+        <div class="demo-login-box">
+          <div class="demo-badge-wrap">
+            <span class="demo-badge">⚡ INSTANT 1-CLICK DEMO</span>
+          </div>
+          <p class="demo-pitch">Testing the app? Log in immediately with pre-filled test kirana credentials:</p>
+          <button type="button" id="demo-login-btn" class="btn btn-demo-auth" onclick="window.BPP_AUTH ? window.BPP_AUTH.quickDemoLogin() : null">
+            <span class="demo-icon">🏪</span>
+            <div class="demo-text-wrap">
+              <strong>Quick Kirana Demo Login</strong>
+              <small>Ramesh Kumar (seller.ramesh@gmail.com)</small>
+            </div>
+            <span class="demo-arrow">→</span>
+          </button>
+        </div>
+
+        <div class="modal-divider">
+          <span>OR SIGN IN WITH YOUR GMAIL</span>
+        </div>
+
+        <!-- Google / Gmail Form -->
+        <form id="login-form" class="modal-form">
+          <div class="form-group">
+            <label for="login-email" class="form-label">Gmail / Email Address</label>
+            <div class="input-glow-wrap">
+              <span class="input-icon">✉️</span>
+              <input 
+                type="email" 
+                id="login-email" 
+                class="form-control" 
+                placeholder="seller.yourname@gmail.com" 
+                required
+              >
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="login-name" class="form-label">Shop / Owner Name (Optional)</label>
+            <div class="input-glow-wrap">
+              <span class="input-icon">👤</span>
+              <input 
+                type="text" 
+                id="login-name" 
+                class="form-control" 
+                placeholder="e.g. Ramesh Kumar (Jai Bharat Kirana)"
+              >
+            </div>
+          </div>
+          <button type="submit" id="login-submit-btn" class="btn btn-primary btn-block">
+            <span>Sign In to My Account</span>
+            <span class="btn-spinner hidden" id="login-spinner"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Redesigned 2026 Footer with Single Brand Logo & About Section -->
   <footer class="app-footer">
     <div class="footer-container">
-      <p>BharatPrice Pulse — Saved analyses are stored in local SQLite database.</p>
+      <div class="footer-grid">
+        
+        <!-- Col 1: About BharatPrice Pulse -->
+        <div class="footer-col footer-col-about">
+          <div class="footer-brand">
+            <img src="/static/img/logo.svg" alt="BharatPrice Pulse Logo" class="footer-mini-logo">
+            <span class="footer-brand-title">BharatPrice Pulse</span>
+          </div>
+          <p class="footer-about-text">
+            Evidence-backed market pricing intelligence for Indian kiranas, retailers, and MSMEs. Powered by real-time SerpApi Google engines.
+          </p>
+          <div class="footer-tags">
+            <span class="footer-badge">🇮🇳 Built for Bharat</span>
+            <span class="footer-badge">⚡ SerpApi Hackathon 2026</span>
+          </div>
+        </div>
+
+        <!-- Col 2: Multi-Engine Architecture Breakdown -->
+        <div class="footer-col">
+          <h4 class="footer-col-title">SerpApi Intelligence Engines</h4>
+          <ul class="footer-engine-list">
+            <li>
+              <span class="engine-bullet">🛒</span>
+              <div>
+                <strong>Google Shopping:</strong>
+                <span>Observed online medians, IQR outlier filtering & price gap calculation.</span>
+              </div>
+            </li>
+            <li>
+              <span class="engine-bullet">📍</span>
+              <div>
+                <strong>Google Local:</strong>
+                <span>Local wholesale discovery & mandi proximity rankings without fake inventory claims.</span>
+              </div>
+            </li>
+            <li>
+              <span class="engine-bullet">📈</span>
+              <div>
+                <strong>Google Trends:</strong>
+                <span>Regional search momentum across Indian states with 12-week regression.</span>
+              </div>
+            </li>
+            <li>
+              <span class="engine-bullet">📰</span>
+              <div>
+                <strong>Google News & Finance:</strong>
+                <span>Commodity tariffs, crop updates & currency signals.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Quick Navigation & Transparency -->
+        <div class="footer-col">
+          <h4 class="footer-col-title">About & Transparency</h4>
+          <ul class="footer-links-list">
+            <li><a href="/">🔍 Run New Price Analysis</a></li>
+            <li><a href="/history">📊 My Saved Market History</a></li>
+            <li><a href="/api/health" target="_blank">🩺 Engine Health & Telemetry</a></li>
+            <li><a href="/api/quota" target="_blank">⚡ Live SerpApi Search Quota</a></li>
+          </ul>
+          <div class="footer-disclaimer-card">
+            <strong>Evidence-Only Guarantee:</strong>
+            <p>All recommendations are deterministically synthesized directly from public SerpApi search evidence. Zero generative hallucination of prices or inventory.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Sub-Footer Bar -->
+      <div class="footer-bottom-bar">
+        <p class="footer-copy">
+          © 2026 BharatPrice Pulse. Powered by official SerpApi engines. Built for Indian MSME Retailers.
+        </p>
+        <div class="footer-status-pill">
+          <span class="status-dot"></span> All Systems Operational
+        </div>
+      </div>
     </div>
   </footer>
 
   <script src="/static/js/app.js"></script>
   <script>
+    // History Page Logic
+    function getStoredUser() {
+      try {
+        const u = localStorage.getItem('bpp_user');
+        return u ? JSON.parse(u) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
     async function loadHistory() {
       const container = document.getElementById('history-list');
+      const subtitle = document.getElementById('history-subtitle');
+      const user = getStoredUser();
+
+      if (!user || !user.email) {
+        subtitle.textContent = "Sign in to see your personalized search history.";
+        container.innerHTML = `
+          <div class="card empty-state reveal-on-scroll">
+            <div class="empty-icon">📂</div>
+            <h3>Your Saved Market Checks</h3>
+            <p>Sign in with your account to view your private pricing history and past market reports.</p>
+            <div style="margin-top: 1.5rem;">
+              <button type="button" class="btn btn-primary" onclick="window.openLoginModal()">Sign In to View History</button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      subtitle.textContent = `Viewing saved market decisions for ${user.name || user.email}`;
+
       try {
-        const resp = await fetch('/api/history');
+        const url = `/api/history?user_email=${encodeURIComponent(user.email)}`;
+        const resp = await fetch(url);
         const data = await resp.json();
         
         if (!data.items || data.items.length === 0) {
           container.innerHTML = `
-            <div class="card empty-state">
+            <div class="card empty-state reveal-on-scroll">
               <div class="empty-icon">🗂️</div>
-              <h3>No market checks saved yet</h3>
-              <p>Go to the home screen and run your first market check!</p>
+              <h3>No market checks saved yet for ${user.name}</h3>
+              <p>Go to the price check screen and analyze your first product!</p>
               <a href="/" class="btn btn-primary" style="margin-top: 1.5rem;">Run First Analysis</a>
             </div>
           `;
@@ -82,11 +304,16 @@
         }
 
         container.innerHTML = data.items.map(item => `
-          <div class="card history-item-card">
+          <div class="card history-item-card reveal-on-scroll">
             <div class="history-header">
               <span class="history-product">${item.product}</span>
               <span class="badge badge-${(item.action || 'hold').toLowerCase().replace(/_/g, '-')}">${item.action_label || item.action}</span>
             </div>
+            ${item.product_description ? `
+              <div class="history-desc-pill">
+                <span>📝 Context:</span> <em>${item.product_description}</em>
+              </div>
+            ` : ''}
             <div class="history-meta">
               <span class="meta-tag">📍 ${item.city}</span>
               <span class="meta-tag">💰 ₹${Number(item.selling_price).toFixed(2)}</span>
@@ -105,13 +332,25 @@
     }
 
     document.getElementById('clear-history-btn').addEventListener('click', async () => {
-      if (confirm('Are you sure you want to delete all saved analyses?')) {
-        await fetch('/api/history', { method: 'DELETE' });
+      const user = getStoredUser();
+      const confirmMsg = user 
+        ? `Are you sure you want to clear history for ${user.email}?` 
+        : 'Are you sure you want to delete your saved analyses?';
+      if (confirm(confirmMsg)) {
+        const url = user ? `/api/history?user_email=${encodeURIComponent(user.email)}` : '/api/history';
+        await fetch(url, { method: 'DELETE' });
         loadHistory();
       }
     });
 
-    document.addEventListener('DOMContentLoaded', loadHistory);
+    document.addEventListener('DOMContentLoaded', () => {
+      loadHistory();
+    });
+
+    // Listen for auth updates from app.js
+    window.addEventListener('bpp:auth-changed', () => {
+      loadHistory();
+    });
   </script>
 </body>
 </html>

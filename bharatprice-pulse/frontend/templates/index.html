@@ -5,11 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BharatPrice Pulse — Real-Time Market Copilot</title>
   <link rel="stylesheet" href="/static/css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇮🇳</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
+  <script>
+    // Fail-safe global modal controllers (functional even before external JS initializes)
+    window.openLoginModal = function() {
+      if (window.BPP_AUTH && typeof window.BPP_AUTH.openModal === 'function') {
+        window.BPP_AUTH.openModal();
+        return;
+      }
+      var modal = document.getElementById('login-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        var inp = document.getElementById('login-email');
+        if (inp) setTimeout(function() { inp.focus(); }, 80);
+      }
+    };
+    window.closeLoginModal = function() {
+      if (window.BPP_AUTH && typeof window.BPP_AUTH.closeModal === 'function') {
+        window.BPP_AUTH.closeModal();
+        return;
+      }
+      var modal = document.getElementById('login-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    };
+  </script>
 </head>
 <body>
 
-  <!-- Ambient Dynamic Lighting Layer -->
+  <!-- Ambient Dynamic Lighting & Interactive Glitter Canvas -->
+  <canvas id="glitter-canvas" class="glitter-canvas" aria-hidden="true"></canvas>
   <div class="ambient-glow ambient-glow-top" aria-hidden="true"></div>
   <div class="ambient-glow ambient-glow-bottom" aria-hidden="true"></div>
 
@@ -19,16 +47,16 @@
   <!-- Navigation Bar -->
   <header class="app-header">
     <div class="header-container">
-      <div class="brand">
+      <a href="/" class="brand" style="text-decoration: none;">
         <div class="brand-badge">
-          <span class="flag-icon">🇮🇳</span>
+          <img src="/static/img/logo.svg" alt="BharatPrice Pulse Logo" class="brand-logo-img">
           <span class="pulse-ring"></span>
         </div>
-        <div>
+        <div class="brand-text-wrap">
           <h1 class="brand-title" data-i18n="app.name">BharatPrice Pulse</h1>
           <p class="brand-tagline" data-i18n="app.tagline">Smart Pricing for Indian Retailers</p>
         </div>
-      </div>
+      </a>
 
       <div class="header-actions">
         <!-- Live SerpApi Quota Telemetry Widget -->
@@ -59,6 +87,22 @@
           <span class="theme-icon moon-icon">🌙</span>
         </button>
 
+        <!-- User Authentication Widget -->
+        <div id="auth-header-widget" class="auth-header-widget">
+          <button type="button" id="auth-login-btn" class="btn btn-auth-pill" onclick="window.openLoginModal()">
+            <span class="auth-icon">🔑</span>
+            <span id="auth-btn-label">Sign In</span>
+          </button>
+          <div id="user-profile-badge" class="user-profile-badge hidden">
+            <img id="user-avatar-img" class="user-avatar-img" src="" alt="Avatar">
+            <div class="user-info-text">
+              <span id="user-display-name" class="user-name"></span>
+              <span id="user-display-email" class="user-email-text"></span>
+            </div>
+            <button type="button" id="auth-logout-btn" class="btn-logout" title="Sign Out" onclick="window.BPP_AUTH ? window.BPP_AUTH.logout() : null">✕</button>
+          </div>
+        </div>
+
         <a href="/history" class="nav-history-btn" data-i18n="app.nav_history">
           <span>📊</span>
           <span class="nav-btn-label">My History</span>
@@ -70,39 +114,63 @@
   <!-- Main Container -->
   <main class="main-content">
     
-    <!-- Hero / Headline -->
+    <!-- Hero / Headline with Cyber-Grid Overlay & Visual Depth -->
     <section class="hero-section">
-      <div class="hero-pill">
-        <span class="hero-pill-sparkle">✦</span>
-        <span>Real-Time Grounded Market Intelligence</span>
+      <div class="hero-top-badges">
+        <div class="hero-pill">
+          <span class="hero-pill-sparkle">✦</span>
+          <span>LIVE SERPAPI MULTI-ENGINE RADAR</span>
+        </div>
+        <div class="hero-feature-chip">
+          <span class="chip-pulse"></span>
+          <span>Zero Hallucinations • 100% Deterministic</span>
+        </div>
       </div>
+
       <h2 class="hero-title">
         <span data-i18n="hero.title">Know Your Market,</span>
         <span class="hero-accent" data-i18n="hero.title_accent">Price with Confidence</span>
       </h2>
       <p class="hero-subtitle" data-i18n="hero.subtitle">
-        Compare your price with online markets and nearby sellers in seconds. Designed for Indian shopkeepers.
+        Compare your shelf price with observed online medians and local wholesale mandis in seconds. Specially engineered for Indian Kirana & Retail MSMEs.
       </p>
 
-      <!-- Quick Test Chips -->
+      <!-- Platform Capability Strip -->
+      <div class="hero-trust-bar">
+        <div class="trust-pill"><span class="trust-icon">🛒</span> <span>Google Shopping Medians</span></div>
+        <div class="trust-pill"><span class="trust-icon">📍</span> <span>Local Wholesale Mandis</span></div>
+        <div class="trust-pill"><span class="trust-icon">📈</span> <span>Trends & Demand Shifts</span></div>
+        <div class="trust-pill"><span class="trust-icon">⚖️</span> <span>Official GST HSN 2026</span></div>
+      </div>
+
+      <!-- Quick Test Commerce Chips -->
       <div class="quick-samples">
-        <span class="quick-samples-label">Quick Try:</span>
-        <button type="button" class="sample-chip" data-product="Fortune Mustard Oil 1L" data-city="Jaipur" data-price="145" data-cost="125">Fortune Mustard Oil 1L</button>
-        <button type="button" class="sample-chip" data-product="Basmati Rice 5kg" data-city="Pune" data-price="420" data-cost="360">Basmati Rice 5kg</button>
-        <button type="button" class="sample-chip" data-product="Samsung Galaxy M14 5G" data-city="Delhi" data-price="12499" data-cost="11500">Samsung Galaxy M14 5G</button>
+        <span class="quick-samples-label">Quick Test:</span>
+        <button type="button" class="sample-chip" data-product="Fortune Mustard Oil 1L" data-city="Jaipur" data-price="145" data-cost="125">
+          <span class="chip-icon">🛢️</span> Fortune Mustard Oil 1L <span class="chip-price">₹145</span>
+        </button>
+        <button type="button" class="sample-chip" data-product="Basmati Rice 5kg" data-city="Pune" data-price="420" data-cost="360">
+          <span class="chip-icon">🍚</span> Basmati Rice 5kg <span class="chip-price">₹420</span>
+        </button>
+        <button type="button" class="sample-chip" data-product="Samsung Galaxy M14 5G" data-city="Delhi" data-price="12499" data-cost="11500">
+          <span class="chip-icon">📱</span> Samsung Galaxy M14 5G <span class="chip-price">₹12,499</span>
+        </button>
       </div>
     </section>
 
-    <!-- Main Seller Form Card -->
+    <!-- Main Seller Form Card with Perspective Frame -->
     <section class="card form-card">
-      <div class="card-glow-border"></div>
+      <div class="card-top-beam" aria-hidden="true"></div>
+      <div class="card-glow-border" aria-hidden="true"></div>
       <div class="form-header-row">
         <div>
           <h3 class="card-title" data-i18n="form.title">Check Your Price Now</h3>
-          <p class="form-subheading">Get observed market medians, local wholesale discoveries, and profit margin analysis</p>
+          <p class="form-subheading">Compute observed market medians, local wholesale discoveries, and profit margin analysis</p>
         </div>
         <div class="live-status-pill">
-          <span class="live-dot"></span> LIVE SCANNER
+          <span class="live-dot-ping"></span>
+          <span class="live-dot"></span>
+          <span>SERPAPI RADAR LIVE</span>
         </div>
       </div>
 
@@ -125,6 +193,26 @@
               >
             </div>
             <small class="form-hint" data-i18n="form.product_hint">Be specific — include brand, size or model if you know it</small>
+          </div>
+
+          <!-- Product Description Input (Context Engine) -->
+          <div class="form-group span-2">
+            <div class="label-row">
+              <label for="description_raw" class="form-label" data-i18n="form.desc_label">Product Description & Details</label>
+              <span class="badge-optional">Optional (Recommended)</span>
+            </div>
+            <div class="input-glow-wrap">
+              <span class="input-icon">📝</span>
+              <input 
+                type="text" 
+                id="description_raw" 
+                name="description_raw" 
+                class="form-control" 
+                data-i18n-placeholder="form.desc_placeholder"
+                placeholder="e.g. 1121 steam aged basmati rice, 5kg pack, or 6GB RAM / 128GB ROM 5G"
+              >
+            </div>
+            <small class="form-hint" data-i18n="form.desc_hint">Add brand, grade, pack size, or variety for more accurate search results (e.g. 1121 steam aged, 5kg)</small>
           </div>
 
           <!-- City / Location Input -->
@@ -266,13 +354,41 @@
     <!-- Results Section (Hidden until analysis returns) -->
     <div id="results-container" class="results-container hidden">
 
+      <!-- Executive Decision Report Export Toolbar -->
+      <section id="report-toolbar" class="card report-toolbar-card reveal-on-scroll">
+        <div class="report-toolbar-content">
+          <div class="report-toolbar-meta">
+            <div class="report-badge-row">
+              <span class="report-chip-pill">📊 DECISION REPORT</span>
+              <span id="report-product-badge" class="report-item-pill">Product</span>
+              <span id="report-date-badge" class="report-date-pill">Today</span>
+            </div>
+            <p class="report-toolbar-sub">Grounded live SerpApi decision summary for Kirana & Retail MSMEs</p>
+          </div>
+          <div class="report-toolbar-actions">
+            <button type="button" id="btn-export-whatsapp" class="btn btn-export btn-whatsapp" title="Copy clean formatted summary text for WhatsApp">
+              <span class="btn-export-icon">💬</span>
+              <span>Copy for WhatsApp</span>
+            </button>
+            <button type="button" id="btn-export-pdf" class="btn btn-export btn-pdf" title="Download Printable PDF Report">
+              <span class="btn-export-icon">📄</span>
+              <span>Download PDF</span>
+            </button>
+            <button type="button" id="btn-export-png" class="btn btn-export btn-png" title="Download Executive Graphic Summary as PNG">
+              <span class="btn-export-icon">🖼️</span>
+              <span>Download PNG</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
       <!-- 1. PRIMARY ACTION CARD -->
-      <section id="card-action" class="card card-action">
+      <section id="card-action" class="card card-action reveal-on-scroll">
         <!-- Rendered dynamically by components.js -->
       </section>
 
       <!-- 2. GRID FOR MARKET & SOURCING -->
-      <div class="results-grid">
+      <div class="results-grid reveal-on-scroll">
         
         <!-- Online Market Card -->
         <section id="card-market" class="card card-result">
@@ -287,7 +403,7 @@
       </div>
 
       <!-- 3. GRID FOR DEMAND & EXTERNAL SIGNALS -->
-      <div class="results-grid">
+      <div class="results-grid reveal-on-scroll">
         
         <!-- Demand Signal Card -->
         <section id="card-demand" class="card card-result">
@@ -302,17 +418,17 @@
       </div>
 
       <!-- 4. SELLER ECONOMICS CARD (IF COST PROVIDED) -->
-      <section id="card-economics" class="card card-result hidden">
+      <section id="card-economics" class="card card-result reveal-on-scroll hidden">
         <!-- Rendered dynamically -->
       </section>
 
       <!-- 5. GST TAX REFERENCE CARD -->
-      <section id="card-gst" class="card card-result">
+      <section id="card-gst" class="card card-result reveal-on-scroll">
         <!-- Rendered dynamically -->
       </section>
 
       <!-- 6. WHY & EVIDENCE AUDIT TRAIL -->
-      <section id="card-sources" class="card card-result">
+      <section id="card-sources" class="card card-result reveal-on-scroll">
         <!-- Rendered dynamically -->
       </section>
 
@@ -320,22 +436,154 @@
 
   </main>
 
-  <!-- Footer -->
+  <!-- Login & Authentication Modal -->
+  <div id="login-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <button type="button" id="modal-close-btn" class="modal-close-btn" aria-label="Close modal" onclick="window.closeLoginModal()">✕</button>
+      <div class="modal-header">
+        <div class="modal-logo-wrap">
+          <img src="/static/img/logo.svg" alt="BharatPrice Pulse" class="modal-logo-img">
+        </div>
+        <h3 id="modal-title" class="modal-title">Sign In to BharatPrice Pulse</h3>
+        <p class="modal-subtitle">Access your private pricing history across your devices.</p>
+      </div>
+      <div class="modal-body">
+        <!-- 1-Click Kirana Demo Login -->
+        <div class="demo-login-box">
+          <div class="demo-badge-wrap">
+            <span class="demo-badge">⚡ INSTANT 1-CLICK DEMO</span>
+          </div>
+          <p class="demo-pitch">Testing the app? Log in immediately with pre-filled test kirana credentials:</p>
+          <button type="button" id="demo-login-btn" class="btn btn-demo-auth" onclick="window.BPP_AUTH ? window.BPP_AUTH.quickDemoLogin() : null">
+            <span class="demo-icon">🏪</span>
+            <div class="demo-text-wrap">
+              <strong>Quick Kirana Demo Login</strong>
+              <small>Ramesh Kumar (seller.ramesh@gmail.com)</small>
+            </div>
+            <span class="demo-arrow">→</span>
+          </button>
+        </div>
+
+        <div class="modal-divider">
+          <span>OR SIGN IN WITH YOUR GMAIL</span>
+        </div>
+
+        <!-- Google / Gmail Form -->
+        <form id="login-form" class="modal-form">
+          <div class="form-group">
+            <label for="login-email" class="form-label">Gmail / Email Address</label>
+            <div class="input-glow-wrap">
+              <span class="input-icon">✉️</span>
+              <input 
+                type="email" 
+                id="login-email" 
+                class="form-control" 
+                placeholder="seller.yourname@gmail.com" 
+                required
+              >
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="login-name" class="form-label">Shop / Owner Name (Optional)</label>
+            <div class="input-glow-wrap">
+              <span class="input-icon">👤</span>
+              <input 
+                type="text" 
+                id="login-name" 
+                class="form-control" 
+                placeholder="e.g. Ramesh Kumar (Jai Bharat Kirana)"
+              >
+            </div>
+          </div>
+          <button type="submit" id="login-submit-btn" class="btn btn-primary btn-block">
+            <span>Sign In to My Account</span>
+            <span class="btn-spinner hidden" id="login-spinner"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Redesigned 2026 Footer with Single Brand Logo & About Section -->
   <footer class="app-footer">
     <div class="footer-container">
-      <div class="footer-brand-wrap">
-        <div class="brand">
-          <span class="flag-icon">🇮🇳</span>
-          <span class="brand-title">BharatPrice Pulse</span>
+      <div class="footer-grid">
+        
+        <!-- Col 1: About BharatPrice Pulse -->
+        <div class="footer-col footer-col-about">
+          <div class="footer-brand">
+            <img src="/static/img/logo.svg" alt="BharatPrice Pulse Logo" class="footer-mini-logo">
+            <span class="footer-brand-title">BharatPrice Pulse</span>
+          </div>
+          <p class="footer-about-text">
+            Evidence-backed market pricing intelligence for Indian kiranas, retailers, and MSMEs. Powered by real-time SerpApi Google engines.
+          </p>
+          <div class="footer-tags">
+            <span class="footer-badge">🇮🇳 Built for Bharat</span>
+            <span class="footer-badge">⚡ SerpApi Hackathon 2026</span>
+          </div>
         </div>
-        <p class="footer-sub">
-          Evidence-backed Market Intelligence for Indian MSMEs & Kirana Retailers. Powered by <strong>SerpApi</strong>.
-        </p>
+
+        <!-- Col 2: Multi-Engine Architecture Breakdown -->
+        <div class="footer-col">
+          <h4 class="footer-col-title">SerpApi Intelligence Engines</h4>
+          <ul class="footer-engine-list">
+            <li>
+              <span class="engine-bullet">🛒</span>
+              <div>
+                <strong>Google Shopping:</strong>
+                <span>Observed online medians, IQR outlier filtering & price gap calculation.</span>
+              </div>
+            </li>
+            <li>
+              <span class="engine-bullet">📍</span>
+              <div>
+                <strong>Google Local:</strong>
+                <span>Local wholesale discovery & mandi proximity rankings without fake inventory claims.</span>
+              </div>
+            </li>
+            <li>
+              <span class="engine-bullet">📈</span>
+              <div>
+                <strong>Google Trends:</strong>
+                <span>Regional search momentum across Indian states with 12-week regression.</span>
+              </div>
+            </li>
+            <li>
+              <span class="engine-bullet">📰</span>
+              <div>
+                <strong>Google News & Finance:</strong>
+                <span>Commodity tariffs, crop updates & currency signals.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Quick Navigation & Transparency -->
+        <div class="footer-col">
+          <h4 class="footer-col-title">About & Transparency</h4>
+          <ul class="footer-links-list">
+            <li><a href="/history">📊 My Saved Market History</a></li>
+            <li><a href="/api/health" target="_blank">🩺 Engine Health & Telemetry</a></li>
+            <li><a href="/api/quota" target="_blank">⚡ Live SerpApi Search Quota</a></li>
+            <li><a href="#analysis-form">🔍 Run New Price Analysis</a></li>
+          </ul>
+          <div class="footer-disclaimer-card">
+            <strong>Evidence-Only Guarantee:</strong>
+            <p>All recommendations are deterministically synthesized directly from public SerpApi search evidence. Zero generative hallucination of prices or inventory.</p>
+          </div>
+        </div>
+
       </div>
-      <div class="footer-disclaimer-box">
-        <p class="footer-disclaimer">
-          <strong>Notice:</strong> Observed market prices reflect sampled public internet listings via Google Shopping. Google Local listings indicate merchant presence and category match; physical inventory and spot billing must be confirmed directly.
+
+      <!-- Bottom Sub-Footer Bar -->
+      <div class="footer-bottom-bar">
+        <p class="footer-copy">
+          © 2026 BharatPrice Pulse. Powered by official SerpApi engines. Built for Indian MSME Retailers.
         </p>
+        <div class="footer-status-pill">
+          <span class="status-dot"></span> All Systems Operational
+        </div>
       </div>
     </div>
   </footer>

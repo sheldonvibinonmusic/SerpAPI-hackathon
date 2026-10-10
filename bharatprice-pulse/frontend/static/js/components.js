@@ -5,7 +5,7 @@
 
 window.Components = {
 
-  renderActionCard(action, actionLabel, explanation, fusion) {
+  renderActionCard(action, actionLabel, explanation, fusion, searchQueryUsed) {
     const actionKey = (action || 'HOLD').toLowerCase().replace(/_/g, '-');
     const actionClass = `action-${actionKey}`;
     const confScore = fusion?.confidence_score ? fusion.confidence_score.toFixed(0) : '85';
@@ -18,12 +18,19 @@ window.Components = {
       </li>
     `).join('') : '';
 
+    const queryEnrichmentHtml = searchQueryUsed ? `
+      <div class="search-enrichment-pill" title="SerpApi query enriched by AI Disambiguation Engine">
+        <span>🔍 SerpApi Query:</span> <strong>${searchQueryUsed}</strong>
+      </div>
+    ` : '';
+
     return `
       <div class="action-header ${actionClass}">
         <div class="action-title-group">
           <span class="action-eyebrow">Strategic Pricing Recommendation</span>
           <h2 class="action-main-title">${actionLabel}</h2>
           <p class="action-headline">${explanation?.headline || ''}</p>
+          ${queryEnrichmentHtml}
         </div>
         <div class="action-meta-badges">
           <span class="badge-confidence">

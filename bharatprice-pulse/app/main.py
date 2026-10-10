@@ -19,6 +19,7 @@ from fastapi.templating import Jinja2Templates
 
 from app.config.settings import get_settings
 from app.routes.analysis import router as analysis_router
+from app.routes.auth import router as auth_router
 from app.routes.health import router as health_router
 from app.routes.history import router as history_router
 from app.routes.quota import router as quota_router
@@ -83,6 +84,7 @@ async def history_page(request: Request):
 
 # API Routers
 app.include_router(analysis_router)
+app.include_router(auth_router)
 app.include_router(quota_router)
 app.include_router(history_router)
 app.include_router(health_router)

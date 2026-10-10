@@ -233,6 +233,11 @@ class AnalysisResponse(BaseModel):
     action_label: str = Field(description="Plain-language action label in the selected UI language")
     explanation: Optional[Explanation] = None
 
+    # Context & Disambiguation info
+    product_description: Optional[str] = Field(default=None, description="Distilled or raw product description")
+    search_query_used: Optional[str] = Field(default=None, description="Precise SerpApi search query used")
+    user_email: Optional[str] = Field(default=None, description="Email of the authenticated user")
+
     # Evidence dimensions
     market_metrics: Optional[MarketMetrics] = None
     fusion: Optional[FusionResult] = None

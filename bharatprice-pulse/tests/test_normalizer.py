@@ -67,3 +67,26 @@ def test_smartphone_5g_not_normalized_as_grams():
     assert norm.base_unit is None
     assert norm.category == ProductCategory.ELECTRONICS_MOBILES
 
+
+def test_description_distillation_and_disambiguation():
+    req = AnalysisRequest(
+        product_raw="Basmati Rice",
+        city_raw="Delhi",
+        selling_price=450.0,
+        description_raw="1121 steam basmati rice 2 years aged long grain fresh quality best rate 5kg bag wholesale",
+    )
+    norm = normalize_request(req)
+    # Quantity extracted from description
+    assert norm.quantity == 5.0
+    assert norm.base_unit == "kg"
+    # Fluff words stripped and key discriminators retained
+    assert "1121" in norm.distilled_tokens
+    assert "steam" in norm.distilled_tokens
+    assert "aged" in norm.distilled_tokens
+    assert "fresh" not in norm.distilled_tokens
+    assert "wholesale" not in norm.distilled_tokens
+    # Search query should be enriched
+    assert "1121" in norm.search_query
+    assert "5kg" in norm.search_query
+    assert norm.category == ProductCategory.PACKAGED_STAPLES
+

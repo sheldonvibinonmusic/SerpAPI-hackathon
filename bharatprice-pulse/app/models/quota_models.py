@@ -35,6 +35,8 @@ class HistoryItemSummary(BaseModel):
     confidence: str
     searches_consumed: int
     mock_mode: bool
+    user_email: Optional[str] = None
+    product_description: Optional[str] = None
 
 
 class HistoryListResponse(BaseModel):

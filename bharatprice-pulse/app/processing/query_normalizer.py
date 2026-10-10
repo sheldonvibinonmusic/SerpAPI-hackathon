@@ -244,28 +244,108 @@ def detect_category(product_text: str, brand: Optional[str] = None) -> Tuple[Pro
     return best_cat, min(0.9, 0.5 + best_score * 0.1)
 
 
+# ---------------------------------------------------------------------------
+# Description distillation & disambiguation dictionaries
+# ---------------------------------------------------------------------------
+
+COMMERCE_STOP_WORDS = {
+    "fresh", "quality", "rate", "rates", "best", "wholesale", "retail", "cheap", "super",
+    "top", "genuine", "original", "guaranteed", "buy", "sell", "available", "store", "shop",
+    "good", "new", "deal", "offer", "discount", "price", "pack", "packet", "bag", "box",
+    "piece", "pieces", "kg", "g", "l", "litre", "liter", "ml", "bottle", "can", "tin",
+    "item", "product", "pure", "special", "fine", "grade", "market", "supplier", "online",
+    "sale", "order", "delivery", "and", "or", "for", "with", "in", "at", "the", "a", "an",
+    "very", "high", "low", "all", "only", "our", "we", "per", "approx", "nearby",
+}
+
+DOMAIN_DISCRIMINATORS = [
+    # Rice / grains
+    "1121", "1509", "1401", "steam", "sella", "golden sella", "raw", "aged", "tibsa",
+    "sharbati", "kolam", "sona masoori", "ponni", "gobindobhog", "jeera samba", "bullet",
+    "long grain", "extra long", "biryani", "mogra", "tukda", "tibbar", "dubai",
+    # Oils / ghee
+    "kachi ghani", "cold pressed", "wood pressed", "filtered", "refined", "virgin",
+    "extra virgin", "organic", "unpolished", "cow ghee", "desi ghee", "buffalo ghee",
+    # Electronics / tech
+    "5g", "4g", "128gb", "256gb", "64gb", "512gb", "1tb", "4gb", "6gb", "8gb", "12gb", "16gb",
+    "snapdragon", "dimensity", "amoled", "oled", "pro", "plus", "ultra", "max", "prime", "lite",
+    # Personal care / FMCG
+    "anti-dandruff", "aloe vera", "neem", "charcoal", "ayurvedic", "herbal", "spf 50", "spf 30",
+]
+
+
+def distill_product_description(
+    product_name: str,
+    description_raw: Optional[str],
+) -> Tuple[list[str], Optional[float], Optional[str], Optional[str]]:
+    """
+    Distills seller's unstructured product description into high-signal discriminators.
+    Returns: (distilled_tokens, extracted_qty, extracted_unit, extracted_brand)
+    """
+    if not description_raw or not description_raw.strip():
+        return [], None, None, None
+
+    desc = normalize_text(description_raw)
+
+    # 1. Check for missing quantity/unit in description
+    extracted_qty, extracted_unit = extract_quantity_and_unit(desc)
+
+    # 2. Check for brand in description
+    extracted_brand = detect_brand(desc)
+
+    # 3. Identify domain discriminators
+    distilled_tokens: list[str] = []
+    prod_lower = normalize_text(product_name)
+
+    for disc in DOMAIN_DISCRIMINATORS:
+        if disc in desc and disc not in prod_lower and disc not in distilled_tokens:
+            distilled_tokens.append(disc)
+
+    # 4. Extract remaining high-signal alphanumeric tokens
+    words = re.findall(r'[a-zA-Z0-9]+', desc)
+    for w in words:
+        if (
+            len(w) >= 3
+            and w not in COMMERCE_STOP_WORDS
+            and w not in prod_lower
+            and not any(w in dt for dt in distilled_tokens)
+        ):
+            distilled_tokens.append(w)
+
+    return distilled_tokens[:4], extracted_qty, extracted_unit, extracted_brand
+
+
 def build_search_query(
     product_name: str,
     brand: Optional[str],
     quantity: Optional[float],
     unit: Optional[str],
     city: str,
+    distilled_tokens: Optional[list[str]] = None,
 ) -> str:
-    """Build the canonical SerpApi search query string."""
+    """Build the canonical SerpApi search query string enriched with distilled discriminators."""
     parts = []
     if brand and brand.lower() not in product_name.lower():
         parts.append(brand)
     parts.append(product_name)
+
+    # Append distilled tokens to eliminate ambiguity
+    if distilled_tokens:
+        for token in distilled_tokens:
+            if token.lower() not in " ".join(parts).lower():
+                parts.append(token)
+
     if quantity and unit:
+        qty_str = f"{int(quantity)}" if quantity == int(quantity) else f"{quantity}"
         if unit == 'L':
-            parts.append(f"{quantity}L")
+            parts.append(f"{qty_str}L")
         elif unit == 'kg':
-            parts.append(f"{quantity}kg")
+            parts.append(f"{qty_str}kg")
         elif unit == 'pcs':
             if quantity > 1:
-                parts.append(f"{int(quantity)} pieces")
+                parts.append(f"{qty_str} pieces")
         else:
-            parts.append(f"{quantity} {unit}")
+            parts.append(f"{qty_str} {unit}")
     return " ".join(parts).strip()
 
 
@@ -313,6 +393,14 @@ def normalize_request(request: AnalysisRequest) -> NormalizedQuery:
         if unit_from_req is None:
             unit_from_req = extracted_unit
 
+    # Intelligent description distillation & disambiguation
+    distilled_tokens, desc_qty, desc_unit, desc_brand = distill_product_description(
+        product_raw, request.description_raw
+    )
+    if qty_from_req is None and desc_qty is not None:
+        qty_from_req = desc_qty
+        unit_from_req = desc_unit
+
     # Normalize unit (ml→L, g→kg)
     if qty_from_req and unit_from_req:
         if unit_from_req.lower() == 'ml':
@@ -327,6 +415,8 @@ def normalize_request(request: AnalysisRequest) -> NormalizedQuery:
 
     # Brand detection
     brand = detect_brand(product_raw)
+    if brand is None and desc_brand is not None:
+        brand = desc_brand
 
     # Clean product name: remove city, remove quantity/unit phrases
     product_name = product_raw
@@ -341,6 +431,11 @@ def normalize_request(request: AnalysisRequest) -> NormalizedQuery:
 
     # Category detection
     category, category_confidence = detect_category(product_raw, brand=brand)
+    if category == ProductCategory.UNKNOWN and request.description_raw:
+        # Retry category detection with description text
+        desc_cat, desc_cat_conf = detect_category(request.description_raw, brand=brand)
+        if desc_cat != ProductCategory.UNKNOWN:
+            category, category_confidence = desc_cat, max(0.4, desc_cat_conf * 0.8)
 
     # --- City normalization ---
     city_normalized = city_raw.strip().title()
@@ -361,6 +456,7 @@ def normalize_request(request: AnalysisRequest) -> NormalizedQuery:
         quantity=qty_from_req,
         unit=unit_from_req,
         city=city_normalized,
+        distilled_tokens=distilled_tokens,
     )
 
     # --- Ambiguity detection ---
@@ -395,6 +491,8 @@ def normalize_request(request: AnalysisRequest) -> NormalizedQuery:
         pack_count=pack_count,
         is_bundle=is_bundle,
         search_query=search_query,
+        description_raw=request.description_raw,
+        distilled_tokens=distilled_tokens,
         city=city_normalized,
         state=state,
         location_string=location_string,

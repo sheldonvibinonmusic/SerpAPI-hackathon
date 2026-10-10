@@ -109,3 +109,51 @@ def test_analyze_response_contains_rich_evidence_lists():
     assert isinstance(data["local_merchants"], list)
     assert isinstance(data["news_articles"], list)
 
+
+def test_auth_login_and_user_scoped_history():
+    # 1. Login user
+    login_payload = {
+        "email": "seller.ramesh@gmail.com",
+        "name": "Ramesh Kumar",
+        "provider": "google",
+    }
+    resp = client.post("/api/auth/login", json=login_payload)
+    assert resp.status_code == 200
+    auth_data = resp.json()
+    assert auth_data["status"] == "authenticated"
+    assert auth_data["user"]["email"] == "seller.ramesh@gmail.com"
+    assert auth_data["user"]["name"] == "Ramesh Kumar"
+
+    # 2. Check /api/auth/me
+    me_resp = client.get("/api/auth/me?user_email=seller.ramesh@gmail.com")
+    assert me_resp.status_code == 200
+    assert me_resp.json()["authenticated"] is True
+    assert me_resp.json()["user"]["email"] == "seller.ramesh@gmail.com"
+
+    # 3. Analyze as Ramesh
+    analysis_payload = {
+        "product_raw": "Basmati Rice 5kg",
+        "city_raw": "Delhi",
+        "selling_price": 500.0,
+        "user_email": "seller.ramesh@gmail.com",
+        "description_raw": "1121 steam aged rice",
+    }
+    analyze_resp = client.post("/api/analyze", json=analysis_payload)
+    assert analyze_resp.status_code == 200
+    res_data = analyze_resp.json()
+    assert res_data["user_email"] == "seller.ramesh@gmail.com"
+    assert res_data["product_description"] is not None
+
+    # 4. History scoped to Ramesh should return his analysis
+    ramesh_hist = client.get("/api/history?user_email=seller.ramesh@gmail.com")
+    assert ramesh_hist.status_code == 200
+    items = ramesh_hist.json()["items"]
+    assert len(items) >= 1
+    assert any(i["user_email"] == "seller.ramesh@gmail.com" for i in items)
+
+    # 5. History for another user should NOT contain Ramesh's item
+    other_hist = client.get("/api/history?user_email=other.merchant@gmail.com")
+    assert other_hist.status_code == 200
+    other_items = other_hist.json()["items"]
+    assert all(i["user_email"] == "other.merchant@gmail.com" for i in other_items)
+

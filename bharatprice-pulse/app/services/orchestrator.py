@@ -316,6 +316,11 @@ async def _execute_analysis(
         action=action,
         action_label=action_label,
         explanation=explanation,
+        product_description=query.description_raw or (
+            ", ".join(query.distilled_tokens) if query.distilled_tokens else None
+        ),
+        search_query_used=query.search_query,
+        user_email=request.user_email or "guest@bharatprice.local",
         market_metrics=metrics,
         fusion=fusion,
         local_merchants=bundle.local_merchants,

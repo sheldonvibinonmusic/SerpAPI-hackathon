@@ -5,9 +5,9 @@ Analysis endpoints: POST /api/analyze, POST /api/upload-image, GET /api/analyze/
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, File, Header, HTTPException, UploadFile, status
 
 from app.models.decision_models import AnalysisResponse
 from app.models.request_models import AnalysisRequest
@@ -27,8 +27,13 @@ router = APIRouter(prefix="/api", tags=["Analysis"])
     summary="Run Market Intelligence Analysis",
     description="Takes product, city, selling price and returns evidence-backed market decision.",
 )
-async def analyze_product(request: AnalysisRequest) -> AnalysisResponse:
+async def analyze_product(
+    request: AnalysisRequest,
+    x_user_email: Optional[str] = Header(default=None, alias="X-User-Email")
+) -> AnalysisResponse:
     """Execute complete analysis pipeline."""
+    if not request.user_email and x_user_email:
+        request.user_email = x_user_email
     try:
         response = await run_analysis(request)
         return response
