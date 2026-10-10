@@ -837,7 +837,7 @@ function exportToWhatsApp() {
   const productTitle = data.product_name || data.search_query_used || 'Product';
   const location = data.location_display || data.city_raw || 'India';
   const actionLabel = data.action_label || data.action || 'RECOMMENDATION';
-  const explanation = data.explanation || '';
+  const explanation = toExportText(data.explanation);
   const dateStr = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
   let actionEmoji = '⚡';
@@ -893,10 +893,26 @@ function exportToPDF() {
   const prevTitle = document.title;
   const safeName = (current.data.product_name || 'Report').replace(/[^a-zA-Z0-9_-]/g, '_');
   document.title = `BharatPrice_Pulse_Report_${safeName}`;
-  window.print();
-  setTimeout(() => {
+  document.body.classList.add('printing-report');
+  const restorePrintState = () => {
+    document.body.classList.remove('printing-report');
     document.title = prevTitle;
-  }, 1000);
+    window.removeEventListener('afterprint', restorePrintState);
+  };
+  window.addEventListener('afterprint', restorePrintState, { once: true });
+  window.print();
+}
+
+function toExportText(value) {
+  if (typeof value === 'string') return value.trim();
+  if (Array.isArray(value)) return value.map(toExportText).filter(Boolean).join(' ');
+  if (!value || typeof value !== 'object') return '';
+  const preferred = ['summary', 'reasoning', 'text', 'message', 'description', 'explanation'];
+  for (const key of preferred) {
+    const text = toExportText(value[key]);
+    if (text) return text;
+  }
+  return Object.values(value).map(toExportText).filter(Boolean).join(' ');
 }
 
 function roundRectCanvas(ctx, x, y, width, height, radius) {
@@ -955,7 +971,7 @@ function drawCanvasMetric(ctx, x, y, w, h, title, val, valColor, sub) {
   ctx.fillText(sub, x + 16, y + 92);
 }
 
-function exportToPNG() {
+function exportToPNGLegacy() {
   const current = window.CURRENT_ANALYSIS;
   if (!current || !current.data) {
     showToast('No active analysis to export. Please run an analysis first.', true);
@@ -1196,6 +1212,96 @@ function exportToPNG() {
   } catch (err) {
     console.error('PNG Export failed:', err);
     showToast('Failed to generate PNG image. Please try PDF download.', true);
+  }
+}
+
+async function exportToPNG() {
+  const current = window.CURRENT_ANALYSIS;
+  if (!current?.data) {
+    showToast('No active analysis to export. Please run an analysis first.', true);
+    return;
+  }
+
+  const button = document.getElementById('btn-export-png');
+  const originalLabel = button?.querySelector('span')?.textContent;
+  if (button) button.disabled = true;
+  if (button?.querySelector('span')) button.querySelector('span').textContent = 'Preparing…';
+
+  try {
+    const { data, sellerPrice } = current;
+    const metrics = data.market_metrics || {};
+    const median = Number(metrics.median_price ?? metrics.median);
+    const min = Number(metrics.min_price ?? metrics.min);
+    const max = Number(metrics.max_price ?? metrics.max);
+    const gap = Number(metrics.seller_price_gap_percent);
+    const product = data.product_name || data.search_query_used || 'Product';
+    const location = data.location_display || data.city_raw || 'India';
+    const decision = data.action_label || data.action || 'Recommendation';
+    const reasoning = toExportText(data.explanation) || 'Market evidence was compared with your selling price.';
+    const actionColor = data.action === 'REPRICE_UP' ? '#10b981' : data.action === 'REPRICE_DOWN' || data.action === 'REVIEW_PRICE' ? '#ef4444' : '#ff7700';
+    const canvas = document.createElement('canvas');
+    canvas.width = 1200; canvas.height = 650;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Canvas is unavailable');
+
+    const background = ctx.createLinearGradient(0, 0, 1200, 650);
+    background.addColorStop(0, '#0b1220'); background.addColorStop(1, '#111c33');
+    ctx.fillStyle = background; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'rgba(255,119,0,.16)'; ctx.beginPath(); ctx.arc(140, 20, 300, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = '#ff7700'; ctx.fillRect(54, 48, 7, 52);
+    ctx.fillStyle = '#ffffff'; ctx.font = '700 28px system-ui, sans-serif'; ctx.fillText('BHARATPRICE PULSE', 82, 72);
+    ctx.fillStyle = '#9fb0c9'; ctx.font = '15px system-ui, sans-serif'; ctx.fillText('MARKET DECISION REPORT', 82, 96);
+    ctx.textAlign = 'right'; ctx.fillText(new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }), 1145, 72); ctx.textAlign = 'left';
+
+    ctx.fillStyle = 'rgba(255,255,255,.08)'; roundRectCanvas(ctx, 54, 128, 1092, 138, 18); ctx.fill();
+    ctx.fillStyle = '#a9bedc'; ctx.font = '700 13px system-ui, sans-serif'; ctx.fillText('PRODUCT · ' + location.toUpperCase(), 82, 162);
+    ctx.fillStyle = '#ffffff'; ctx.font = '700 30px system-ui, sans-serif';
+    wrapCanvasText(ctx, product, 82, 205, 880, 38);
+    ctx.fillStyle = actionColor; roundRectCanvas(ctx, 82, 226, 270, 28, 14); ctx.fill();
+    ctx.fillStyle = '#09111f'; ctx.font = '700 13px system-ui, sans-serif'; ctx.fillText(decision.toUpperCase(), 98, 246);
+
+    const cardY = 300, cardW = 336, cardH = 124;
+    const drawMetric = (x, label, value, color, note) => {
+      ctx.fillStyle = 'rgba(255,255,255,.07)'; roundRectCanvas(ctx, x, cardY, cardW, cardH, 16); ctx.fill();
+      ctx.fillStyle = '#9fb0c9'; ctx.font = '700 13px system-ui, sans-serif'; ctx.fillText(label, x + 24, cardY + 32);
+      ctx.fillStyle = color; ctx.font = '700 31px system-ui, sans-serif'; ctx.fillText(value, x + 24, cardY + 75);
+      ctx.fillStyle = '#9fb0c9'; ctx.font = '14px system-ui, sans-serif'; ctx.fillText(note, x + 24, cardY + 101);
+    };
+    drawMetric(54, 'YOUR SELLING PRICE', `₹${formatINRValue(sellerPrice)}`, '#ffbf69', 'Current input');
+    drawMetric(432, 'MARKET MEDIAN', Number.isFinite(median) ? `₹${formatINRValue(median)}` : 'N/A', '#4dd9ef', 'Observed online median');
+    const gapLabel = Number.isFinite(gap) ? `${gap > 0 ? '+' : ''}${gap.toFixed(1)}%` : 'N/A';
+    drawMetric(810, 'PRICE GAP', gapLabel, gap > 5 ? '#ff7a7a' : gap < -5 ? '#75e6ae' : '#ffbf69', 'Against market median');
+
+    if (Number.isFinite(min) && Number.isFinite(max) && max > min && Number.isFinite(sellerPrice)) {
+      const rangeY = 480, rangeX = 82, rangeW = 1035;
+      const low = Math.min(min, sellerPrice), high = Math.max(max, sellerPrice);
+      const position = value => rangeX + ((value - low) / (high - low)) * rangeW;
+      ctx.fillStyle = '#32415d'; roundRectCanvas(ctx, rangeX, rangeY, rangeW, 10, 5); ctx.fill();
+      ctx.fillStyle = '#ff8a27'; roundRectCanvas(ctx, position(min), rangeY - 3, Math.max(8, position(max) - position(min)), 16, 8); ctx.fill();
+      ctx.fillStyle = '#4dd9ef'; ctx.fillRect(position(median) - 2, rangeY - 14, 4, 38);
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(position(sellerPrice), rangeY + 5, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#9fb0c9'; ctx.font = '13px system-ui, sans-serif'; ctx.fillText(`Observed range ₹${formatINRValue(min)} – ₹${formatINRValue(max)}`, rangeX, 530);
+      ctx.textAlign = 'right'; ctx.fillText('Orange: market range  •  Blue: median  •  White: your price', rangeX + rangeW, 530); ctx.textAlign = 'left';
+    }
+
+    ctx.fillStyle = '#d7e2f2'; ctx.font = '16px system-ui, sans-serif';
+    wrapCanvasText(ctx, reasoning, 82, 580, 1035, 24);
+
+    const safeName = product.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 30);
+    const blob = await new Promise((resolve, reject) => canvas.toBlob(value => value ? resolve(value) : reject(new Error('PNG encoding failed')), 'image/png'));
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = `BharatPrice_Pulse_Decision_${safeName}.png`;
+    document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast('PNG decision summary downloaded.');
+  } catch (err) {
+    console.error('PNG export failed:', err);
+    showToast('Could not generate the PNG summary.', true);
+  } finally {
+    if (button) button.disabled = false;
+    if (button?.querySelector('span')) button.querySelector('span').textContent = originalLabel || 'Download PNG';
   }
 }
 

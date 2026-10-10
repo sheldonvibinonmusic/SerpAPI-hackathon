@@ -2628,6 +2628,15 @@ body {
    Generates clean, professional PDF / Printouts of Decision Report
    ============================================================ */
 @media print {
+  /* Export only the generated decision report. */
+  body.printing-report > :not(.main-content) {
+    display: none !important;
+  }
+
+  body.printing-report .main-content > :not(#results-container) {
+    display: none !important;
+  }
+
   /* Hide non-printable browser chrome */
   #glitter-canvas,
   .ambient-glow,
